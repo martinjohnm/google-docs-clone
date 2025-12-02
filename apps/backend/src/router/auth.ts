@@ -2,28 +2,20 @@ import { prisma } from "@repo/db";
 import { Request, Response, Router } from "express";
 import { userCreationInput } from "@repo/types/auth"
 import jwt from "jsonwebtoken"
+import { UserCookieMiddleware } from "../middlewares/user.middleware";
 
 const router = Router()
 
 const CLIENT_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 const jwt_sec = process.env.JWT_SECRET || "sec"
+const cookie_name = process.env.COOKIE_NAME || "token-my-docs"
 
-interface UserDetails {
-    email : string, 
-    password : string
+interface JwtTokenDecoed {
+    id : string,
+    name : string,
+    email : string
 }
 
-router.post("/login-local", async (req: Request, res : Response) => {
-    const credentials = req.body as UserDetails
-    const userDb = await prisma.user.findUnique({
-        where : {
-            email : credentials.email
-        }
-    })
-    res.json({
-        hi : "hi"
-    })
-})
 
 router.post("/signup-local", async (req: Request, res : Response) => {
     
@@ -70,6 +62,11 @@ router.post("/signup-local", async (req: Request, res : Response) => {
             token
         }
 
+        res.cookie(cookie_name, token, {
+            httpOnly : true,
+            secure : true,
+            sameSite : "lax"
+        })
         res.status(201).json({
             message : "User created successfully",
             userDetails
@@ -81,5 +78,31 @@ router.post("/signup-local", async (req: Request, res : Response) => {
     }
     
 })
+
+
+router.get("/get-user", UserCookieMiddleware, async (req : Request, res : Response) => {    
+
+    const token = req.cookies[cookie_name]
+
+    const decoded = jwt.verify(token, jwt_sec) as JwtTokenDecoed
+    const id = decoded.id 
+    const user = await prisma.user.findUnique({
+        where : {
+            id
+        }
+    })
+
+    if (!user) {
+        res.json({
+            message : "invalid credentials"
+        })
+        return
+    }
+    
+    res.json({
+        user
+    })
+})
+
 
 export default router

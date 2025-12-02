@@ -31,6 +31,19 @@ export const LandingPage = () => {
         
     } 
 
+    async function Hi() {
+        const res = await fetch(`${BACKEND_URL}/auth/get-user`, {
+            method: "GET",
+            credentials: "include", // IMPORTANT for sessions
+            headers: {
+            "Content-Type": "application/json",
+            }
+        });
+        const data = await res.json()
+        console.log(data);
+        
+    }
+
     return <div className="mx-auto container h-screen max-w-5xl p-1 flex flex-col justify-center items-center">
 
         <div className="max-w-2xl h-[300px] p-4 rounded-md bg-slate-400 flex flex-col justify-center items-center">
@@ -44,6 +57,9 @@ export const LandingPage = () => {
             </div>
             <div className="rounded-md text-white mt-4">
                 <button onClick={Login} className="bg-green-400 cursor-pointer hover:bg-green-600 rounded-md text-black px-2 py-1">Login</button>
+            </div>
+            <div className="rounded-md text-white mt-4">
+                <button onClick={Hi} className="bg-green-400 cursor-pointer hover:bg-green-600 rounded-md text-black px-2 py-1">Login</button>
             </div>
         </div>
     </div>

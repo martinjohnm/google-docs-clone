@@ -4,12 +4,13 @@ import express from "express"
 import passport from 'passport';
 import cors from "cors"
 import auth from "./router/auth"
-const port = process.env.PORT || 3000
+import cookieParser from "cookie-parser"
 
+const port = process.env.PORT || 3000
 
 const app = express()
 app.use(express.json())
-
+app.use(cookieParser())
 
 app.use(
   cors({
