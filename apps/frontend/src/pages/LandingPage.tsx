@@ -31,9 +31,22 @@ export const LandingPage = () => {
         
     } 
 
-    async function Hi() {
+    async function getUser() {
         const res = await fetch(`${BACKEND_URL}/auth/get-user`, {
             method: "GET",
+            credentials: "include", // IMPORTANT for sessions
+            headers: {
+            "Content-Type": "application/json",
+            }
+        });
+        const data = await res.json()
+        console.log(data);
+        
+    }
+
+    async function logout() {
+        const res = await fetch(`${BACKEND_URL}/auth/logout`, {
+            method: "POST",
             credentials: "include", // IMPORTANT for sessions
             headers: {
             "Content-Type": "application/json",
@@ -59,7 +72,10 @@ export const LandingPage = () => {
                 <button onClick={Login} className="bg-green-400 cursor-pointer hover:bg-green-600 rounded-md text-black px-2 py-1">Login</button>
             </div>
             <div className="rounded-md text-white mt-4">
-                <button onClick={Hi} className="bg-green-400 cursor-pointer hover:bg-green-600 rounded-md text-black px-2 py-1">Login</button>
+                <button onClick={getUser} className="bg-green-400 cursor-pointer hover:bg-green-600 rounded-md text-black px-2 py-1">user</button>
+            </div>
+            <div className="rounded-md text-white mt-4">
+                <button onClick={logout} className="bg-green-400 cursor-pointer hover:bg-green-600 rounded-md text-black px-2 py-1">Logout</button>
             </div>
         </div>
     </div>
