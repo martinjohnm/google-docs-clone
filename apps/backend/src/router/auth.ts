@@ -52,6 +52,8 @@ router.post("/signup-local", async (req: Request, res : Response) => {
         })
 
         const token = signJwtToken(newUser)
+        console.log(token);
+        
 
         const userDetails = {
             id : newUser.id,

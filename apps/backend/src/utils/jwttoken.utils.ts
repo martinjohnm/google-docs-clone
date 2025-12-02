@@ -15,11 +15,14 @@ interface JwtTokenDecoed {
     email : string
 }
 
-export function signJwtToken(user : UserToSign) {
+export function signJwtToken(user : UserToSign) : string {
+    const name = user.name || "guest"
     const token = jwt.sign(
-        { id : user.id, name : user.name, email : user.email },
+        { id : user.id, name , email : user.email },
         jwt_sec
     )
+
+    return token
 }
 
 
