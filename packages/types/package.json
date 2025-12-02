@@ -1,0 +1,26 @@
+{
+  "name": "@repo/types",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "exports": {
+    "./auth": {
+      "types": "./src/auth.ts",
+      "default": "./dist/auth.js"
+    },
+    "./subtract": {
+      "types": "./src/subtract.ts",
+      "default": "./dist/subtract.js"
+    }
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "tsx": "^4.21.0",
+    "zod": "^4.1.13"
+  }
+}
