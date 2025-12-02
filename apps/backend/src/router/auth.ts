@@ -1,20 +1,15 @@
 import { prisma } from "@repo/db";
 import { Request, Response, Router } from "express";
-import { userCreationInput } from "@repo/types/auth"
-import jwt from "jsonwebtoken"
+import { userCreationInput, userLoginInput } from "@repo/types/auth"
 import { UserCookieMiddleware } from "../middlewares/user.middleware";
+import { comparePassword, hashPassword } from "../utils/password.utils";
+import { signJwtToken, verifyJwtToken } from "../utils/jwttoken.utils";
 
 const router = Router()
 
 const CLIENT_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
-const jwt_sec = process.env.JWT_SECRET || "sec"
 const cookie_name = process.env.COOKIE_NAME || "token-my-docs"
 
-interface JwtTokenDecoed {
-    id : string,
-    name : string,
-    email : string
-}
 
 
 router.post("/signup-local", async (req: Request, res : Response) => {
@@ -25,6 +20,7 @@ router.post("/signup-local", async (req: Request, res : Response) => {
             res.json({
                 message : schema.error
             })
+            return
         }
 
         if (!schema.data) {
@@ -45,15 +41,17 @@ router.post("/signup-local", async (req: Request, res : Response) => {
             })
             return
         }
+
+        const hashedPassowrd = await hashPassword(schema.data.password)
         
         const newUser = await prisma.user.create({
-            data : schema.data
+            data : {
+                ...schema.data,
+                password : hashedPassowrd
+            }
         })
 
-        const token = jwt.sign(
-            { id : newUser.id, name : newUser.name, email : newUser.email },
-            jwt_sec
-        )
+        const token = signJwtToken(newUser)
 
         const userDetails = {
             id : newUser.id,
@@ -71,6 +69,7 @@ router.post("/signup-local", async (req: Request, res : Response) => {
             message : "User created successfully",
             userDetails
         })
+        return
     } catch(e) {
         res.status(500).json({
             message : "Server error"
@@ -79,29 +78,120 @@ router.post("/signup-local", async (req: Request, res : Response) => {
     
 })
 
+router.post("/login-local", async (req : Request, res : Response) => {
+    try {
+
+        const schema = userLoginInput.safeParse(req.body)
+        if (!schema.success) {
+            res.json({
+                message : schema.error
+            })
+            return
+        }
+
+        if (!schema.data) {
+            res.json({
+                message : "Input error"
+            })
+            return
+        }
+
+
+        const userDb = await prisma.user.findUnique({
+            where : {
+                email : schema.data.email
+            }
+        })
+
+        if (!userDb) {
+            res.json({
+                message : "No such user"
+            })
+            return
+        }
+
+        const isPasswordvalid = await comparePassword(schema.data.password, userDb.password)
+
+        if (!isPasswordvalid) {
+            res.json({
+                message : "Incorrect password"
+            })
+            return
+        }
+
+
+        const token = signJwtToken(userDb)
+        const userDetails = {
+            id : userDb.id,
+            name : userDb.name,
+            email : userDb.email,
+            token
+        }
+
+        res.cookie(cookie_name, token, {
+            httpOnly : true,
+            secure : true,
+            sameSite : "lax"
+        })
+        res.json({
+            message : "Login successfull",
+            userDetails
+        })
+
+
+    } catch(e) {
+        res.status(500).json({
+            message : "Server error"
+        })
+    }
+})
+
+router.post("/logout", async (req : Request, res : Response) => {
+    try {
+        res.clearCookie(cookie_name, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+        });
+
+        res.status(200).json({ message: "Logged out" });
+        return
+    } catch(e) {
+        res.status(500).json({
+            message : "Server error"
+        })
+    }
+})
+
 
 router.get("/get-user", UserCookieMiddleware, async (req : Request, res : Response) => {    
 
-    const token = req.cookies[cookie_name]
-
-    const decoded = jwt.verify(token, jwt_sec) as JwtTokenDecoed
-    const id = decoded.id 
-    const user = await prisma.user.findUnique({
-        where : {
-            id
-        }
-    })
-
-    if (!user) {
-        res.json({
-            message : "invalid credentials"
+    try {
+        const token = req.cookies[cookie_name]
+        const decoded = verifyJwtToken(token)
+        const id = decoded.id 
+        const user = await prisma.user.findUnique({
+            where : {
+                id
+            }
         })
-        return
+
+        if (!user) {
+            res.json({
+                message : "invalid credentials"
+            })
+            return
+        }
+        
+        res.json({
+            user
+        })
+    } catch(e) {
+        res.status(500).json({
+            message : "Server error"
+        })
     }
     
-    res.json({
-        user
-    })
 })
 
 

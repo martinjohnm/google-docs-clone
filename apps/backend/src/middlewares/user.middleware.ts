@@ -7,9 +7,10 @@ export const UserCookieMiddleware = (req : Request, res: Response, next : NextFu
     const token = req.cookies[cookie_name]
     
     if (!token) {
-        return res.status(401).json({
+        res.status(401).json({
             error  : "No auth cookie found"
         })
+        return
     };
 
     next();
