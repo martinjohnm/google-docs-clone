@@ -12,6 +12,7 @@
   "dependencies": {
     "@repo/types": "*",
     "@tailwindcss/vite": "^4.1.17",
+    "axios": "^1.13.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router": "^6.27.0",

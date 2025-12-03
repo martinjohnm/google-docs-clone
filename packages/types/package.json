@@ -13,6 +13,10 @@
     "./normal-types" : {
       "auth" : "./src/normal-types/auth.ts",
       "default": "./dist/normal-types/auth.js"
+    },
+    "./http-types" : {
+      "http" : "./src/normal-types/status.code.ts",
+      "default": "./dist/normal-types/status.code.js"
     }
   },
   "devDependencies": {

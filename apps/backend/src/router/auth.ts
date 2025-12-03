@@ -4,6 +4,7 @@ import { userCreationInput, userLoginInput } from "@repo/types/zod-types"
 import { UserCookieMiddleware } from "../middlewares/user.middleware";
 import { comparePassword, hashPassword } from "../utils/password.utils";
 import { signJwtToken, verifyJwtToken } from "../utils/jwttoken.utils";
+import { CONFLICT, CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from "@repo/types/http-types"
 
 const router = Router()
 
@@ -17,14 +18,14 @@ router.post("/signup-local", async (req: Request, res : Response) => {
     try {
         const schema = userCreationInput.safeParse(req.body)
         if (!schema.success) {
-            res.json({
+            res.status(UNPROCESSABLE_ENTITY).json({
                 message : schema.error
             })
             return
         }
 
         if (!schema.data) {
-            res.json({
+            res.status(UNPROCESSABLE_ENTITY).json({
                 message : "Input error"
             })
             return
@@ -36,7 +37,7 @@ router.post("/signup-local", async (req: Request, res : Response) => {
         })
 
         if (userDb) {
-            res.json({
+            res.status(CONFLICT).json({
                 message : "user already exists"
             })
             return
@@ -67,13 +68,13 @@ router.post("/signup-local", async (req: Request, res : Response) => {
             secure : true,
             sameSite : "lax"
         })
-        res.status(201).json({
+        res.status(CREATED).json({
             message : "User created successfully",
             userDetails
         })
         return
     } catch(e) {
-        res.status(500).json({
+        res.status(INTERNAL_SERVER_ERROR).json({
             message : "Server error"
         })
     }
@@ -83,16 +84,18 @@ router.post("/signup-local", async (req: Request, res : Response) => {
 router.post("/login-local", async (req : Request, res : Response) => {
     try {
 
+        console.log("hi from login");
+        
         const schema = userLoginInput.safeParse(req.body)
         if (!schema.success) {
-            res.json({
+            res.status(UNPROCESSABLE_ENTITY).json({
                 message : schema.error
             })
             return
         }
 
         if (!schema.data) {
-            res.json({
+            res.status(UNPROCESSABLE_ENTITY).json({
                 message : "Input error"
             })
             return
@@ -106,7 +109,7 @@ router.post("/login-local", async (req : Request, res : Response) => {
         })
 
         if (!userDb) {
-            res.json({
+            res.status(NOT_FOUND).json({
                 message : "No such user"
             })
             return
@@ -115,7 +118,7 @@ router.post("/login-local", async (req : Request, res : Response) => {
         const isPasswordvalid = await comparePassword(schema.data.password, userDb.password)
 
         if (!isPasswordvalid) {
-            res.json({
+            res.status(UNAUTHORIZED).json({
                 message : "Incorrect password"
             })
             return
@@ -123,26 +126,23 @@ router.post("/login-local", async (req : Request, res : Response) => {
 
 
         const token = signJwtToken(userDb)
-        const userDetails = {
-            id : userDb.id,
-            name : userDb.name,
-            email : userDb.email,
-            token
-        }
+        const {password, ...user} = userDb
+        
 
         res.cookie(cookie_name, token, {
             httpOnly : true,
             secure : true,
             sameSite : "lax"
         })
-        res.json({
+        res.status(OK).json({
             message : "Login successfull",
-            userDetails
+            user, 
+            token
         })
 
 
     } catch(e) {
-        res.status(500).json({
+        res.status(INTERNAL_SERVER_ERROR).json({
             message : "Server error"
         })
     }
@@ -156,17 +156,17 @@ router.post("/logout", async (req : Request, res : Response) => {
             sameSite: "lax",
         });
 
-        res.status(200).json({ message: "Logged out" });
+        res.status(OK).json({ message: "Logged out" });
         return
     } catch(e) {
-        res.status(500).json({
+        res.status(INTERNAL_SERVER_ERROR).json({
             message : "Server error"
         })
     }
 })
 
 
-router.get("/get-user", UserCookieMiddleware, async (req : Request, res : Response) => {    
+router.get("/me", async (req : Request, res : Response) => {    
 
     try {
         const token = req.cookies[cookie_name]
@@ -180,7 +180,7 @@ router.get("/get-user", UserCookieMiddleware, async (req : Request, res : Respon
 
 
         if (!user) {
-            res.json({
+            res.status(UNPROCESSABLE_ENTITY).json({
                 message : "invalid credentials"
             })
             return
@@ -188,12 +188,12 @@ router.get("/get-user", UserCookieMiddleware, async (req : Request, res : Respon
         
         const {password, ...safeUser} = user
 
-        res.json({
+        res.status(OK).json({
             message : "User fetched successfully",
             user : safeUser
         })
     } catch(e) {
-        res.status(500).json({
+        res.status(INTERNAL_SERVER_ERROR).json({
             message : "Server error"
         })
     }

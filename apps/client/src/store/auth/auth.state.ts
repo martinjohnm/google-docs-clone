@@ -2,15 +2,17 @@
 import { UserObjectFrontend } from "@repo/types/normal-types";
 import { atom } from "recoil";
 
+export interface User {
+    user : UserObjectFrontend | null,
+    loading : boolean,
+    error : string | null
+}
 
-export const userAtom = atom<UserObjectFrontend | null>({
+export const userAtom = atom<User>({
     key : "userAtom",
     default : {
-        id : "i",
-        name : "n",
-        email : "joh",
-        username : "jojo",
-        createdAt : new Date(),
-        lastLogin : new Date()
+        user : null,
+        loading : true,
+        error : null
     }
 })

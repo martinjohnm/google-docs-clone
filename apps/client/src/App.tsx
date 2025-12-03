@@ -1,8 +1,13 @@
 
-import { RecoilRoot } from 'recoil'
+import { RecoilRoot, useRecoilValue } from 'recoil'
 import './App.css'
 import { SignupPage } from './pages/SignupPage'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { HomePage } from './pages/HomePage'
+import { LoginPage } from './pages/LoginPage'
+import { UserProtection } from './protected/UserProtection'
+import { useFetchInitialData } from './hooks/user/useFetchInitialData'
+import { userAtom } from './store/auth/auth.state'
 
 function App() {
 
@@ -17,18 +22,25 @@ function App() {
 
 function AuthApp () {
 
+  useFetchInitialData()
+  const user = useRecoilValue(userAtom)
+
+  if (user.loading) {
+    return <div>
+      Loading...
+    </div>
+  }
+
   return (
 
-    
-      //@ts-ignore
-      <div className="">
         <BrowserRouter >
           <Routes>
-              <Route path="/" element={<SignupPage/>}/>
+              <Route path='/' element={<UserProtection><HomePage/></UserProtection>}/>
+              <Route path="/signup" element={<SignupPage/>}/>
+              <Route path='/login' element={<LoginPage/>}/>
           </Routes>
         </BrowserRouter>
       
-      </div>
   )
 }
 
