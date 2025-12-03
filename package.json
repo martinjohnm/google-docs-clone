@@ -11,7 +11,9 @@
   "devDependencies": {
     "prettier": "^3.6.2",
     "turbo": "^2.6.1",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "@types/react": "^18.3.27",
+    "@types/react-dom": "^18.3.7"
   },
   "engines": {
     "node": ">=18"
@@ -20,9 +22,5 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ],
-  "dependencies": {
-    "@tailwindcss/vite": "^4.1.17",
-    "tailwindcss": "^4.1.17"
-  }
+  ]
 }

@@ -6,13 +6,13 @@
     "build": "tsc"
   },
   "exports": {
-    "./auth": {
-      "types": "./src/auth.ts",
-      "default": "./dist/auth.js"
+    "./zod-types": {
+      "auth": "./src/zod-types/auth.ts",
+      "default": "./dist/zod-types/auth.js"
     },
-    "./subtract": {
-      "types": "./src/subtract.ts",
-      "default": "./dist/subtract.js"
+    "./normal-types" : {
+      "auth" : "./src/normal-types/auth.ts",
+      "default": "./dist/normal-types/auth.js"
     }
   },
   "devDependencies": {

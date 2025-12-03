@@ -1,6 +1,6 @@
 import { prisma } from "@repo/db";
 import { Request, Response, Router } from "express";
-import { userCreationInput, userLoginInput } from "@repo/types/auth"
+import { userCreationInput, userLoginInput } from "@repo/types/zod-types"
 import { UserCookieMiddleware } from "../middlewares/user.middleware";
 import { comparePassword, hashPassword } from "../utils/password.utils";
 import { signJwtToken, verifyJwtToken } from "../utils/jwttoken.utils";
@@ -178,6 +178,7 @@ router.get("/get-user", UserCookieMiddleware, async (req : Request, res : Respon
             }
         })
 
+
         if (!user) {
             res.json({
                 message : "invalid credentials"
@@ -185,8 +186,11 @@ router.get("/get-user", UserCookieMiddleware, async (req : Request, res : Respon
             return
         }
         
+        const {password, ...safeUser} = user
+
         res.json({
-            user
+            message : "User fetched successfully",
+            user : safeUser
         })
     } catch(e) {
         res.status(500).json({
