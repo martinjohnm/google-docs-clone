@@ -36,11 +36,9 @@ export const useFetchInitialData = () => {
 
         if (err.response.data.status === UNPROCESSABLE_ENTITY) {
             console.log(err.response.data.message);
-            window.location.href = "/login"
 
         } else  {
             console.log(err.response.data.message)
-            window.location.href = "/login"
 
         }
       }

@@ -2,8 +2,6 @@ import { UserLoginInput } from "@repo/types/zod-types"
 import React, { useState } from "react"
 import { LoginSignupLayout } from "../utils/LoginSIgnupLayout"
 import { useUserLogin } from "../hooks/user/useUserLogin"
-import { useAuthInit } from "../hooks/user/useAuthInit"
-
 
 export const LoginPage = () => {
     
@@ -21,7 +19,6 @@ export const LoginPage = () => {
     }
 
     const {loginUser} = useUserLogin()
-    useAuthInit()
     
     const handleLogin = () => {
         loginUser(inputs)

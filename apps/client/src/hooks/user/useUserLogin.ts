@@ -4,6 +4,7 @@ import { useState } from "react"
 import { LOGIN_USER } from "../../urls/user.urls"
 import { useSetRecoilState } from "recoil"
 import { userAtom } from "../../store/auth/auth.state"
+import { Navigate } from "react-router"
 
 
 
@@ -11,12 +12,13 @@ export const useUserLogin = () => {
     
     const [loading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<string | null> (null)
-    const setUser = useSetRecoilState(userAtom)
+    const setAuth = useSetRecoilState(userAtom);
 
     async function loginUser(inputs : UserLoginInput) {
         try {
             setLoading(true)
             setError(null)
+            setAuth(prev => ({ ...prev, loading: true }));
 
             const res = await axios.post(
                 LOGIN_USER,
@@ -25,10 +27,20 @@ export const useUserLogin = () => {
             );
 
             console.log(res.data);
-            setUser(res.data.user)
+            setAuth({
+                user : res.data.user,
+                loading : false,
+                error : null
+            })
+
             window.location.href = "/"
 
         } catch(err  :any) {    
+            setAuth({
+                user: null,
+                loading: false,
+                error: err.response?.data?.message || "Not authenticated"
+            });
             setError(err)
             console.log(err.response.data.message);
             
