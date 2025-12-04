@@ -1,10 +1,10 @@
 import { prisma } from "@repo/db";
 import { Request, Response, Router } from "express";
 import { userCreationInput, userLoginInput } from "@repo/types/zod-types"
-import { UserCookieMiddleware } from "../middlewares/user.middleware";
 import { comparePassword, hashPassword } from "../utils/password.utils";
 import { signJwtToken, verifyJwtToken } from "../utils/jwttoken.utils";
 import { CONFLICT, CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNAUTHORIZED, UNPROCESSABLE_ENTITY } from "@repo/types/http-types"
+import { CookieOption } from "../utils/cookie.header";
 
 const router = Router()
 
@@ -16,6 +16,8 @@ const cookie_name = process.env.COOKIE_NAME || "token-my-docs"
 router.post("/signup-local", async (req: Request, res : Response) => {
     
     try {
+        console.log("hi from signup");
+        
         const schema = userCreationInput.safeParse(req.body)
         if (!schema.success) {
             res.status(UNPROCESSABLE_ENTITY).json({
@@ -35,7 +37,7 @@ router.post("/signup-local", async (req: Request, res : Response) => {
                 email : schema.data.email
             }
         })
-
+     
         if (userDb) {
             res.status(CONFLICT).json({
                 message : "user already exists"
@@ -44,36 +46,31 @@ router.post("/signup-local", async (req: Request, res : Response) => {
         }
 
         const hashedPassowrd = await hashPassword(schema.data.password)
+        const {confirmPassword,...userCreationData} = schema.data
         
         const newUser = await prisma.user.create({
             data : {
-                ...schema.data,
+                ...userCreationData,
                 password : hashedPassowrd
             }
         })
 
+        
         const token = signJwtToken(newUser)
         console.log(token);
         
 
-        const userDetails = {
-            id : newUser.id,
-            name : newUser.name,
-            email : newUser.email,
-            token
-        }
+        const {password, ...safeUser} = newUser
 
-        res.cookie(cookie_name, token, {
-            httpOnly : true,
-            secure : true,
-            sameSite : "lax"
-        })
-        res.status(CREATED).json({
-            message : "User created successfully",
-            userDetails
+        res.cookie(cookie_name, token, CookieOption)
+        res.status(OK).json({
+            message : "User fetched successfully",
+            user : safeUser
         })
         return
     } catch(e) {
+        console.log(e);
+        
         res.status(INTERNAL_SERVER_ERROR).json({
             message : "Server error"
         })
@@ -84,7 +81,6 @@ router.post("/signup-local", async (req: Request, res : Response) => {
 router.post("/login-local", async (req : Request, res : Response) => {
     try {
 
-        console.log("hi from login");
         
         const schema = userLoginInput.safeParse(req.body)
         if (!schema.success) {
@@ -129,11 +125,7 @@ router.post("/login-local", async (req : Request, res : Response) => {
         const {password, ...user} = userDb
         
 
-        res.cookie(cookie_name, token, {
-            httpOnly : true,
-            secure : true,
-            sameSite : "lax"
-        })
+        res.cookie(cookie_name, token, CookieOption)
         res.status(OK).json({
             message : "Login successfull",
             user, 
@@ -150,14 +142,11 @@ router.post("/login-local", async (req : Request, res : Response) => {
 
 router.post("/logout", async (req : Request, res : Response) => {
     try {
-        res.clearCookie(cookie_name, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-        });
+        
+        res.clearCookie(cookie_name, CookieOption);
 
-        res.status(OK).json({ message: "Logged out" });
-        return
+        return res.status(OK).json({ message: "Logged out" });
+        
     } catch(e) {
         res.status(INTERNAL_SERVER_ERROR).json({
             message : "Server error"

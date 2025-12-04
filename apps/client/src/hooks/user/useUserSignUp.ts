@@ -1,26 +1,25 @@
-import { UserLoginInput } from "@repo/types/zod-types"
-import axios from "axios"
-import { useState } from "react"
-import { LOGIN_USER } from "../../urls/user.urls"
-import { useSetRecoilState } from "recoil"
-import { userAtom } from "../../store/auth/auth.state"
+import { useState } from "react";
+import { useSetRecoilState } from "recoil";
+import { userAtom } from "../../store/auth/auth.state";
+import { UserCreationInput } from "@repo/types/zod-types";
+import axios from "axios";
+import { SIGNUP_USER } from "../../urls/user.urls";
 
 
 
-export const useUserLogin = () => {
-    
+export const useUserSignUp = () => {
     const [loading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<string | null> (null)
     const setAuth = useSetRecoilState(userAtom);
 
-    async function loginUser(inputs : UserLoginInput) {
+    async function signupUser(inputs : UserCreationInput) {
         try {
             setLoading(true)
             setError(null)
             setAuth(prev => ({ ...prev, loading: true }));
 
             const res = await axios.post(
-                LOGIN_USER,
+                SIGNUP_USER,
                 inputs,
                 { withCredentials : true }
             );
@@ -32,7 +31,6 @@ export const useUserLogin = () => {
                 error : null
             })
 
-            
 
         } catch(err  :any) {    
             setAuth({
@@ -49,5 +47,5 @@ export const useUserLogin = () => {
         }
     }
 
-    return { loginUser, loading, error}
+    return { signupUser, loading, error}
 }
