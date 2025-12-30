@@ -17,6 +17,10 @@
     "./http-types" : {
       "http" : "./src/normal-types/status.code.ts",
       "default": "./dist/normal-types/status.code.js"
+    },
+    "./ot-types": {
+      "ot" : "./src/ot-types/ot.ts",
+      "default": "./dist/ot-types/ot.js"
     }
   },
   "devDependencies": {
