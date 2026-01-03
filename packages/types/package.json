@@ -18,6 +18,10 @@
       "http" : "./src/normal-types/status.code.ts",
       "default": "./dist/normal-types/status.code.js"
     },
+    "./ws-types" : {
+      "ws" : "./src/normal-types/ws.ts",
+      "default" : "./dist/normal-types/ws.js"
+    },
     "./ot-types": {
       "ot" : "./src/ot-types/ot.ts",
       "default": "./dist/ot-types/ot.js"
