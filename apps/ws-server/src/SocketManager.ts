@@ -18,11 +18,11 @@ export class User {
 class SocketManager {
     private static instance : SocketManager
     private interestedSockets : Map<string, User[]> // mapping socketId with corresponding user obj socketId => User
-    private userRoomMapping : Map<string, string> // mapping userId with corresponding socketId
+    private userRoomMapping : Map<string, string[]> // mapping userId with corresponding socketId
 
     private constructor() {
         this.interestedSockets = new Map<string, User[]>()
-        this.userRoomMapping = new Map<string, string>()
+        this.userRoomMapping = new Map<string, string[]>()
     }
 
     static getInstance() {
@@ -40,7 +40,10 @@ class SocketManager {
             user
         ]);
 
-        this.userRoomMapping.set(user.id, roomId)
+        this.userRoomMapping.set(user.id, [
+            ...(this.userRoomMapping.get(user.id) || []),
+            roomId
+        ])
     }
 
     broadCast(roomId: string, message: MESSAGE_OUTPUT_TYPE) {
@@ -55,9 +58,9 @@ class SocketManager {
         })
     }
 
-    removeUser(user: User) {
-        const roomId = this.userRoomMapping.get(user.id)
-        if (!roomId) {
+    removeUser(user: User, roomId : string) {
+        const rooms = this.userRoomMapping.get(user.id)
+        if (!rooms || rooms.length === 0) {
             console.error("User is not interested in any room")
             return;
         }
@@ -75,7 +78,15 @@ class SocketManager {
             this.interestedSockets.delete(roomId)
         }
 
-        this.userRoomMapping.delete(user.id)
+        // this.userRoomMapping.delete(user.id)
+        // delete the roomId from the userRoom maping if it have zero users 
+        const remainingRooms = rooms.filter(roomId => 
+            roomId !== roomId
+        )
+        this.userRoomMapping.set(
+            roomId,
+            remainingRooms
+        )
     }
 }
 
