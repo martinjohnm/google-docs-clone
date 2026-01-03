@@ -1,5 +1,5 @@
 
-import { DeleteOp, InsertOp, Op } from "@repo/types/ot-types"
+import { DeleteOp, InsertOp, Op, OpType } from "@repo/types/ot-types"
 
 
 export function makeId() : string {
@@ -13,8 +13,12 @@ export function tieBreak(aId: string, bId : string) {
 
 // apply
 
-export function applyOp(doc: string, op: Op) {
-
+export function applyOp(doc: string, op: Op) : string {
+    if (op.type == OpType.INSERT) {
+        return doc.slice(0, op.pos) + op.text + doc.slice(op.pos)
+    } else {
+        return doc.slice(0, op.pos) + doc.slice(op.pos, op.length)
+    }
 }
 
 // Transforms

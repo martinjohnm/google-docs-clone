@@ -1,3 +1,4 @@
+import { MESSAGE_OUTPUT_TYPE } from "@repo/types/ws-types";
 import { randomUUID } from "crypto";
 import { WebSocket } from "ws";
 
@@ -12,14 +13,16 @@ export class User {
     }
 }
 
+
+
 class SocketManager {
     private static instance : SocketManager
-    private interestedSockets : Map<string, User[]>
-    private userRoomMapping : Map<string, string>
+    private interestedSockets : Map<string, User[]> // mapping socketId with corresponding user obj socketId => User
+    private userRoomMapping : Map<string, string> // mapping userId with corresponding socketId
 
     private constructor() {
         this.interestedSockets = new Map<string, User[]>()
-        this.userRoomMapping = new Map<string, string>
+        this.userRoomMapping = new Map<string, string>()
     }
 
     static getInstance() {
@@ -31,5 +34,49 @@ class SocketManager {
         return SocketManager.instance
     }
 
-    
+    addUser(user: User, roomId: string) {
+        this.interestedSockets.set(roomId, [
+            ...(this.interestedSockets.get(roomId) || []),
+            user
+        ]);
+
+        this.userRoomMapping.set(user.id, roomId)
+    }
+
+    broadCast(roomId: string, message: MESSAGE_OUTPUT_TYPE) {
+        const users = this.interestedSockets.get(roomId)
+        if (!users) {
+            console.error("No users in room")
+            return;
+        }
+
+        users.forEach((user) => {
+            user.socket.send(JSON.stringify(message))
+        })
+    }
+
+    removeUser(user: User) {
+        const roomId = this.userRoomMapping.get(user.id)
+        if (!roomId) {
+            console.error("User is not interested in any room")
+            return;
+        }
+        const interestedUsers = this.interestedSockets.get(roomId) || []
+        const remainingUsers = interestedUsers.filter(u => 
+            u.id !== user.id
+        )
+
+        this.interestedSockets.set(
+            roomId,
+            remainingUsers
+        )
+
+        if (this.interestedSockets.get(roomId)?.length === 0) {
+            this.interestedSockets.delete(roomId)
+        }
+
+        this.userRoomMapping.delete(user.id)
+    }
 }
+
+export const socketManager = SocketManager.getInstance()

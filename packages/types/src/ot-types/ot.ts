@@ -1,19 +1,27 @@
 
 
+export enum OpType {
+    INSERT = "insert",
+    DELETE = "delete",
+    NO_OP  = "no_op"
+}
+
 type OpBase = { clientId: string, rev: number, id: string }
-export type InsertOp = OpBase & { type: "insert", pos: number, text: string }
-export type DeleteOp = OpBase & { type: "delete", pos: number, length: number }
+export type InsertOp = OpBase & { type: OpType.INSERT, pos: number, text: string }
+export type DeleteOp = OpBase & { type: OpType.DELETE, pos: number, length: number }
 export type Op = InsertOp | DeleteOp
 
-export type OtServerResponse = 
+export type OtServerDataResponse = 
     {
         ack: boolean,
         applied: boolean,
         rev: number, 
-        op : null
+        op : null, 
+        doc : string
     } | {
         ack: boolean, 
         applied: boolean,
         rev : number,
-        op : Op
+        op : Op,
+        doc: string
     }
