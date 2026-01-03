@@ -58,7 +58,7 @@ export class Room {
 
         // sent events to connected clients
 
-        if (op.type == "insert") {
+        if (op.type == OpType.INSERT) {
 
             socketManager.broadCast(this.roomId, {
                 type : OpType.INSERT, 
@@ -72,9 +72,7 @@ export class Room {
             })
 
             
-        } 
-
-        if (op.type == "delete") {
+        } else {
             socketManager.broadCast(this.roomId, {
                 type : OpType.DELETE, 
                 data : {
