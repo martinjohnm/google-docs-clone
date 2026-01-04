@@ -80,11 +80,11 @@ class SocketManager {
 
         // this.userRoomMapping.delete(user.id)
         // delete the roomId from the userRoom maping if it have zero users 
-        const remainingRooms = rooms.filter(roomId => 
-            roomId !== roomId
+        const remainingRooms = rooms.filter(roomIdExisting => 
+            roomIdExisting !== roomId
         )
         this.userRoomMapping.set(
-            roomId,
+            user.id,
             remainingRooms
         )
     }
