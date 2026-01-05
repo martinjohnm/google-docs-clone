@@ -55,6 +55,8 @@ export class Room {
         this.history.push(transformed)
         this.rev += 1
 
+        console.log(this.doc, this.rev, transformed.rev);
+        
 
         // sent events to connected clients
 
