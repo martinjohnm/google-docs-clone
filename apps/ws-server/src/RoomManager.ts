@@ -28,10 +28,9 @@ export class RoomManager {
             return;
         }
 
-        this.users = this.users.filter((u) => u.socket !== user.socket)
         
+        this.removeHandler(u)
 
-        socketManager.removeUser(u)
     }
 
     removeRoom(roomId: string) {
@@ -97,8 +96,25 @@ export class RoomManager {
                     return
                 }
 
+                
                 room.receiveOp(message.data.op)
                 
+            }
+        })
+    }
+
+    private removeHandler(user: User) {
+        user.socket.on("message", async (data) => {
+            const message = JSON.parse(data.toString()) as MESSAGE_INPUT_TYPE
+            if (message.type == RoomType.DELETE_ROOM) {
+                const room = this.rooms.find(r => r.roomId === message.data.roomId)
+                if (!room) {
+                    console.error("THere is no such room")
+                    return
+                }
+
+                socketManager.removeUser(user, room.roomId)
+                this.users = this.users.filter((u) => u.socket !== user.socket)
             }
         })
     }

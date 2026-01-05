@@ -11,6 +11,10 @@ export enum RoomType {
     JOIN_ROOM = "join_room"
 }
 
+export enum UserType {
+    DELETE_USER = "delete_user"
+}
+
 type INIT_ROOM = {
     type : RoomType.INIT_ROOM
 }
@@ -28,6 +32,14 @@ type DELETE_ROOM = {
         
     }
 }
+
+type DELETE_USER_FROM_ROOM = {
+    type : UserType.DELETE_USER,
+    data : {
+        roomId : string
+    }
+}
+
 type DELETE_OP_FROM_CLIENT = {
     type : OpType.DELETE,
     data : {
@@ -43,7 +55,7 @@ type INSERT_OP_FROM_CLIENT = {
     }
 }
 
-export type MESSAGE_INPUT_TYPE = INIT_ROOM | JOIN_ROOM | DELETE_ROOM | DELETE_OP_FROM_CLIENT | INSERT_OP_FROM_CLIENT
+export type MESSAGE_INPUT_TYPE = INIT_ROOM | JOIN_ROOM | DELETE_ROOM | DELETE_OP_FROM_CLIENT | INSERT_OP_FROM_CLIENT | DELETE_USER_FROM_ROOM
 
 
 
