@@ -78,7 +78,8 @@ export class RoomManager {
             if (message.type === OpType.INSERT) {
                 const room = this.rooms.find(r => r.roomId === message.data.roomId)
                                 
-
+                console.log(message.data);
+                
                 if (!room) {
                     console.error("No such room present!")
                     return
