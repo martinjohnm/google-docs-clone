@@ -109,13 +109,24 @@ function transformDeleteDelete(a: DeleteOp, b: DeleteOp): DeleteOp | null {
 
 }
 
-function transform(a: Op, b: Op, tieBreakClientId: (aId: string, bId: string) => boolean) : Op | null {
+export function transform(a: Op, b: Op, tieBreakClientId: (aId: string, bId: string) => boolean) : Op | null {
     if (a.type === "insert" && b.type === "insert") return transformInsertInsert(a, b, tieBreakClientId);
     if (a.type === "insert" && b.type === "delete") return transformInsertDelete(a, b);
     if (a.type === "delete" && b.type === "insert") return transformDeleteInsert(a, b);
     if (a.type === "delete" && b.type === "delete") return transformDeleteDelete(a, b);
     return a;
 }
+
+export function transformPair(
+  a: Op,
+  b: Op,
+  tieBreakClientId: (aId: string, bId: string) => boolean
+): [Op | null, Op | null] {
+  const aPrime = transform(a, b, tieBreakClientId);
+  const bPrime = transform(b, a, tieBreakClientId);
+  return [aPrime, bPrime];
+}
+
 
 export function transformAgainstSequence(a: Op, seq: Op[], tieBreakClientId: (aId: string, bId: string) => boolean) : Op | null {
     let out : Op | null = a;

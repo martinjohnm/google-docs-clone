@@ -1,6 +1,6 @@
 import { Op, OpType } from "@repo/types/ot-types";
 
-export function getTextOperation(oldText: string, newText: string) : Op | null {
+export function diffToOp(oldText: string, newText: string) : Op | null {
   let start = 0;
 
   while (

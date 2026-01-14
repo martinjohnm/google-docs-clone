@@ -2,7 +2,6 @@ import { Op, OpType } from "@repo/types/ot-types"
 import { randomUUID } from "crypto"
 import { socketManager, User } from "./SocketManager.js"
 import { applyOp, tieBreak, transformAgainstSequence } from "@repo/ot-core"
-import { RoomOutputType } from "@repo/types/ws-types"
 
 
 
