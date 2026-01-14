@@ -52,7 +52,9 @@ export class RoomManager {
                 socketManager.broadCast(room.roomId, {
                     type : RoomOutputType.ROOM_CREATED,
                     data : {
-                        roomId : room.roomId
+                        roomId : room.roomId,
+                        doc : room.doc,
+                        version : room.rev
                     }
                 })
                 
@@ -72,7 +74,9 @@ export class RoomManager {
                 socketManager.broadCast(room.roomId, {
                     type : RoomOutputType.USER_JOINDED,
                     data : {
-                        roomId : room.roomId
+                        roomId : room.roomId,
+                        doc : room.doc,
+                        version : room.rev
                     }
                 })
             }

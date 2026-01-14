@@ -9,8 +9,8 @@ import { applyOp, tieBreak, transformAgainstSequence } from "@repo/ot-core"
 export class Room {
     public roomId : string
     
-    private doc : string
-    private rev : number
+    doc : string
+    rev : number
     private history : Op[]
     private users : User[]
     

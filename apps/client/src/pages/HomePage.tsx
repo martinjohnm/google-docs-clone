@@ -21,6 +21,9 @@ export const HomePage = () => {
         }))
     }
 
+    const [initialDoc, setInitalDoc] = useState<string | null>(null)
+    const [initialVersion, setInitialVersion] = useState<number | null>(null)
+
     const join_room = () => {
 
         if (socket && roomIdForJoining){
@@ -40,11 +43,18 @@ export const HomePage = () => {
             const message = JSON.parse(event.data) as MESSAGE_OUTPUT_TYPE
             
             if (message.type === RoomOutputType.ROOM_CREATED) {
+                console.log("room created", message);
+                
                 setRoom(message.data.roomId)
+                setInitalDoc(message.data.doc)
+                setInitialVersion(message.data.version)
             }
 
             if (message.type === RoomOutputType.USER_JOINDED) {
+                console.log("user joined", message);
                 setRoom(message.data.roomId)
+                setInitalDoc(message.data.doc)
+                setInitialVersion(message.data.version)
             }
 
         }
@@ -75,7 +85,7 @@ export const HomePage = () => {
         <div className="max-w-7xl mx-auto container h-screen bg-slate-300 mt-10 p-10">
             <div className="w-full h-full">
                 
-                {!room ? (
+                {(room === null || initialDoc === null || initialVersion === null) ? (
                 <div>   
                     <button onClick={init_room} className="bg-green-300 outline-none border-2">Create Room</button>
                     <p>Or</p>
@@ -86,7 +96,7 @@ export const HomePage = () => {
                 </div>
                 
                 ) : (
-                <HomePageWithROomId room={room} wss={socket}/>
+                <HomePageWithROomId room={room} socket={socket} initialDoc={initialDoc} initialVersion={initialVersion}/>
             )}
                     
             </div>
