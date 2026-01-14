@@ -4,8 +4,8 @@ import { OtClient } from "../../utils/OtClient";
 
 
 
-export function useOTDocument(client: OtClient) {
-  const [doc, setDoc] = useState("");
+export function useOTDocument(client: OtClient,initialDoc: string) {
+  const [doc, setDoc] = useState(initialDoc);
 
 
   useEffect(() => {

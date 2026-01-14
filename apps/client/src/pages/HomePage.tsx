@@ -24,8 +24,6 @@ export const HomePage = () => {
     const [initialDoc, setInitalDoc] = useState<string | null>(null)
     const [initialVersion, setInitialVersion] = useState<number | null>(null)
 
-    console.log(`initDoc=${initialDoc} initVer=${initialVersion} roomId=${room }`);
-
     const join_room = () => {
 
         if (socket && roomIdForJoining){

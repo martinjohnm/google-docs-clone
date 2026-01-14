@@ -3,26 +3,20 @@ import { useOTDocument } from "../hooks/ot/useOTDocument"
 import { diffToOp } from "../utils/getDiff"
 import { OtClient } from "../utils/OtClient"
 import { OtTransport } from "../utils/OtTransport"
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 
 
 export const HomePageWithROomId  = ({room, socket, initialDoc, initialVersion} : {room : string, socket : WebSocket, initialDoc : string, initialVersion : number}) => {
 
 
     // console.log(`initDoc=${initialDoc} initVer=${initialVersion} roomId=${room }`);
-    
-
-    useEffect(() => {
-
-    }, [initialDoc, initialVersion])
-    
 
     const otClientRef = useRef<OtClient>()
 
     if (!otClientRef.current) {
         otClientRef.current = new OtClient(initialDoc,initialVersion,room, nanoid())
     }
-    const doc = useOTDocument(otClientRef.current)
+    const doc = useOTDocument(otClientRef.current, initialDoc)
     const transport = new OtTransport(socket, otClientRef.current)
 
     function onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -40,6 +34,9 @@ export const HomePageWithROomId  = ({room, socket, initialDoc, initialVersion} :
             rev : otClientRef.current.version,
             id : nanoid()
         }
+
+        console.log(op);
+        
 
         transport.sendLocal(op)
 

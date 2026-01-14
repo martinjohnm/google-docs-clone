@@ -16,11 +16,12 @@ export class OtClient {
 
     private listeners = new Set<(doc : string ) => void>();
 
-    constructor(initialDoc : string, version: number, roomId : string, id : string) {
+    constructor(initialDoc : string, version: number, roomId : string, id : string) {        
         this.doc = initialDoc
         this.version = version
         this.roomId = roomId
         this.id = id
+        this.emit()
     }
 
     subscribe(listner: (doc: string) => void) {
