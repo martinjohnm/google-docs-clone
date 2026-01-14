@@ -69,14 +69,18 @@ export enum RoomOutputType {
 export type ROOM_CREATED = {
     type : RoomOutputType.ROOM_CREATED,
     data : {
-        roomId : string
+        roomId : string, 
+        doc : string,
+        version : number
     }
 }
 
 export type USER_JOINED = {
     type : RoomOutputType.USER_JOINDED,
     data : {
-        roomId : string
+        roomId : string, 
+        doc : string,
+        version : number
     }
 }
 

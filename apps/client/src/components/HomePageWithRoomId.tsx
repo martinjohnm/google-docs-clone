@@ -3,21 +3,27 @@ import { useOTDocument } from "../hooks/ot/useOTDocument"
 import { diffToOp } from "../utils/getDiff"
 import { OtClient } from "../utils/OtClient"
 import { OtTransport } from "../utils/OtTransport"
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 
 
-export const HomePageWithROomId  = ({room, wss} : {room : string, wss : WebSocket}) => {
+export const HomePageWithROomId  = ({room, socket, initialDoc, initialVersion} : {room : string, socket : WebSocket, initialDoc : string, initialVersion : number}) => {
 
 
+    // console.log(`initDoc=${initialDoc} initVer=${initialVersion} roomId=${room }`);
+    
+
+    useEffect(() => {
+
+    }, [initialDoc, initialVersion])
     
 
     const otClientRef = useRef<OtClient>()
 
     if (!otClientRef.current) {
-        otClientRef.current = new OtClient("",0,room, nanoid())
+        otClientRef.current = new OtClient(initialDoc,initialVersion,room, nanoid())
     }
     const doc = useOTDocument(otClientRef.current)
-    const transport = new OtTransport(wss, otClientRef.current)
+    const transport = new OtTransport(socket, otClientRef.current)
 
     function onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
         const newText = e.target.value
@@ -32,7 +38,7 @@ export const HomePageWithROomId  = ({room, wss} : {room : string, wss : WebSocke
             ...op,
             clientId : otClientRef.current.id,
             rev : otClientRef.current.version,
-            
+            id : nanoid()
         }
 
         transport.sendLocal(op)
@@ -43,7 +49,7 @@ export const HomePageWithROomId  = ({room, wss} : {room : string, wss : WebSocke
     return <div className="flex flex-col justify-center items-center">
                 <p>{`roomId = ${room}`}</p>
                 
-                <textarea onChange={onChange} value={doc}  className="bg-slate-100 outline-none p-1 w-full h-[600px]" name="" id="">
+                <textarea onChange={onChange} value={doc} className="bg-slate-100 outline-none p-1 w-full h-[600px]" name="" id="">
 
                 </textarea>
             </div>
