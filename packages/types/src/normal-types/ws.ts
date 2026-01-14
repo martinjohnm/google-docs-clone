@@ -66,31 +66,31 @@ export enum RoomOutputType {
     USER_JOINDED = "user_joined"
 } 
 
-type ROOM_CREATED = {
+export type ROOM_CREATED = {
     type : RoomOutputType.ROOM_CREATED,
     data : {
         roomId : string
     }
 }
 
-type USER_JOINED = {
+export type USER_JOINED = {
     type : RoomOutputType.USER_JOINDED,
     data : {
         roomId : string
     }
 }
 
-type INSERT_OP_FROM_SERVER = {
+export type INSERT_OP_FROM_SERVER = {
     type : OpType.INSERT,
     data : OtServerDataResponse
 }
 
-type DELETE_OP_FROM_SERVER = {
+export type DELETE_OP_FROM_SERVER = {
     type : OpType.DELETE,
     data : OtServerDataResponse
 }
 
-type NO_OP_FROM_SERVER = {
+export type NO_OP_FROM_SERVER = {
     type : OpType.NO_OP,
     data : OtServerDataResponse
 }

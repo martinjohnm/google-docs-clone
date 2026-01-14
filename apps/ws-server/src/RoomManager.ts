@@ -60,12 +60,14 @@ export class RoomManager {
 
             if (message.type === RoomType.JOIN_ROOM) {
                 const room = this.rooms.find(r => r.roomId === message.data.roomId)
-
+                console.log(room);
+                
                 if (!room) {
                     console.error("No such room present!")
                     return
                 }
-
+                console.log(room.roomId);
+                
                 socketManager.addUser(user, room.roomId)
                 socketManager.broadCast(room.roomId, {
                     type : RoomOutputType.USER_JOINDED,
@@ -91,7 +93,8 @@ export class RoomManager {
 
             if (message.type === OpType.DELETE) {
                 const room = this.rooms.find(r => r.roomId === message.data.roomId)
-
+                console.log(message.data);
+                
                 if (!room) {
                     console.error("No such room present!")
                     return
