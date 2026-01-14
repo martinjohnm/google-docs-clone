@@ -1,6 +1,6 @@
 import { Op, OpType } from "@repo/types/ot-types"
 import { OtClient } from "./OtClient"
-import { MESSAGE_OUTPUT_TYPE, RoomType } from "@repo/types/ws-types"
+import { MESSAGE_OUTPUT_TYPE } from "@repo/types/ws-types"
 
 
 export class OtTransport {
