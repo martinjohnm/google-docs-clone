@@ -17,7 +17,7 @@ export function applyOp(doc: string, op: Op) : string {
     if (op.type == OpType.INSERT) {
         return doc.slice(0, op.pos) + op.text + doc.slice(op.pos)
     } else {
-        return doc.slice(0, op.pos) + doc.slice(op.pos, op.length)
+        return doc.slice(0, op.pos) + doc.slice(op.pos+op.length)
     }
 }
 

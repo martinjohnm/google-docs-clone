@@ -17,6 +17,8 @@ export const HomePageWithROomId  = ({room, socket, initialDoc, initialVersion} :
         otClientRef.current = new OtClient(initialDoc,initialVersion,room, nanoid())
     }
     const doc = useOTDocument(otClientRef.current, initialDoc)
+    console.log(doc);
+    
     const transport = new OtTransport(socket, otClientRef.current)
 
     function onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -35,7 +37,6 @@ export const HomePageWithROomId  = ({room, socket, initialDoc, initialVersion} :
             id : nanoid()
         }
 
-        console.log(op);
         
 
         transport.sendLocal(op)
