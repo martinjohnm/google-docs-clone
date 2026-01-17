@@ -1,0 +1,10 @@
+    // apps/my-new-node-app/tsconfig.json
+    {
+      "extends": "@repo/typescript-config/base.json", // If you have a shared base config
+      "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src"
+      },
+      "include": ["src/**/*.ts"],
+      "exclude": ["node_modules", "dist"]
+    }
