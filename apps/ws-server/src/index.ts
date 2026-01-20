@@ -2,10 +2,6 @@
 
 import "dotenv/config"
 
-import { prisma } from "@repo/db";
-import { makeId } from "@repo/ot-core";
-
-import { Room } from "./websocket/Room.js";
 import { WebSocketServer } from "ws";
 import { RoomManager } from "./websocket/RoomManager.js";
 import { User } from "./websocket/SocketManager.js";
