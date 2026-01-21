@@ -13,6 +13,7 @@
   "type": "module",
   "dependencies": {
     "@repo/db": "*",
+    "@repo/ot-core": "*",
     "@repo/types": "*",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
