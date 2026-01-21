@@ -4,6 +4,9 @@ import { verifyJwtToken } from "../utils/jwttoken.utils";
 import { INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNPROCESSABLE_ENTITY } from "@repo/types/http-types";
 import { UserProtectionMiddleware } from "../middlewares/user.middleware";
 import { getUserFromDbUsingTokenFromCookies } from "../utils/db.utils";
+import { applyOp, transformAgainstSequence } from "@repo/ot-core";
+import { Op } from "@repo/types/ot-types";
+import { reconstructorFromSnapshot } from "../ot-helpers/reconstructorFromSnapshot";
 
 
 
@@ -35,7 +38,18 @@ router.post("/create", UserProtectionMiddleware,  async (req, res) => {
                             role : "OWNER"
                         }
                     ]
+                },
+                snapshots : {
+                    create : [
+                        {
+                            content : "",
+                            version : 0
+                        }
+                    ]
                 }
+            },
+            include : {
+                snapshots : true
             }
         })
 
@@ -82,6 +96,13 @@ router.get("/get/:id", UserProtectionMiddleware, async (req, res) => {
         const existingDoc = await prisma.document.findUnique({
             where : {
                 id
+            },
+            include : {
+                snapshots : {
+                    orderBy : {
+                        version : "desc"
+                    }
+                }
             }
         })
 
@@ -92,9 +113,37 @@ router.get("/get/:id", UserProtectionMiddleware, async (req, res) => {
             return
         }
 
+        const latestSnapshot = existingDoc.snapshots[0]
+
+        if (!latestSnapshot) {
+            res.status(NOT_FOUND).json({
+                message : "No snapshots something is wrong"
+            })
+            return
+        }
+
+
+        const operationsAfterLatestSnapshot = await prisma.operation.findMany({
+            where : {
+                documentId : existingDoc.id,
+                version : {
+                    gt : latestSnapshot.version
+                }
+            }, 
+            orderBy : {
+                version : "desc"
+            }
+        })
+        
+        // transform the ops with snapshot to get the latest doc
+
+
+        const documentData = reconstructorFromSnapshot(latestSnapshot, operationsAfterLatestSnapshot)
+        
         res.status(OK).json({
             message : "Document fetched successfully",
-            document : existingDoc
+            document : existingDoc,
+            snapshot : existingDoc.snapshots[0]
         })
         return
 
