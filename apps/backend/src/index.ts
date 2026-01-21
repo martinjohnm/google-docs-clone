@@ -4,6 +4,7 @@ import express from "express"
 import passport from 'passport';
 import cors from "cors"
 import auth from "./router/auth"
+import doc from "./router/doc"
 import cookieParser from "cookie-parser"
 
 const port = process.env.PORT || 3000
@@ -33,11 +34,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/auth", auth)
-
-app.get("/hi", (req, res) => {
-  res.json({
-    hi : "hi"
-  })
-})
+app.use("/doc", doc)
 
 app.listen(port, () => console.log(`Server running on port ${port}`));

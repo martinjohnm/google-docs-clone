@@ -17,9 +17,11 @@ export const useFetchInitialData = () => {
         const res = await axios.get(GET_USER, {
           withCredentials: true
         });
-
+        console.log(res.data.token);
+        
         setAuth({
           user: res.data.user,
+          token : res.data.token,
           loading: false,
           error: null
         });
@@ -30,6 +32,7 @@ export const useFetchInitialData = () => {
 
         setAuth({
           user: null,
+          token : null,
           loading: false,
           error: err.response?.data?.message || "Not authenticated"
         });

@@ -65,7 +65,8 @@ router.post("/signup-local", async (req: Request, res : Response) => {
         res.cookie(cookie_name, token, CookieOption)
         res.status(OK).json({
             message : "User fetched successfully",
-            user : safeUser
+            user : safeUser,
+            token
         })
         return
     } catch(e) {
@@ -179,7 +180,8 @@ router.get("/me", async (req : Request, res : Response) => {
 
         res.status(OK).json({
             message : "User fetched successfully",
-            user : safeUser
+            user : safeUser,
+            token
         })
     } catch(e) {
         res.status(INTERNAL_SERVER_ERROR).json({

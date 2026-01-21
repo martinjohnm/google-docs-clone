@@ -29,6 +29,7 @@ export const useUserLogout = () => {
 
             setUser({
                 user : null,
+                token : null,
                 loading : false,
                 error : null
             })

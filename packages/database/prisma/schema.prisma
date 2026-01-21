@@ -16,4 +16,72 @@ model User {
   createdAt DateTime    @default(now())
   lastLogin DateTime?
   
+  documents DocumentMember[]
+  edits     Operation[]
+}
+
+
+model Document {
+  id         String      @id @default(uuid())
+  title      String
+  version    Int         @default(0)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  members    DocumentMember[]
+  operations Operation[]
+  snapshots  Snapshot[]
+}
+
+model DocumentMember {
+  id         String     @id @default(uuid())
+  documentId String 
+  userId     String
+  role       Role
+  createdAt  DateTime   @default(now())
+
+  document   Document   @relation(fields: [documentId], references: [id])
+  user       User       @relation(fields: [userId],references: [id])    
+
+  @@unique([documentId, userId])
+}
+
+
+model Operation {
+  id         String     @id @default(uuid())
+  documentId String
+  userId     String
+  version    Int
+  type       OpType
+  position   Int
+  text       String?
+  length     Int?
+  createdAt  DateTime   @default(now())
+
+  document   Document   @relation(fields: [documentId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
+
+
+}
+
+model Snapshot {
+  id         String   @id @default(uuid())
+  documentId String
+  content    String
+  version    Int
+  createdAt  DateTime @default(now())
+
+
+  document   Document @relation(fields: [documentId], references: [id])
+}
+
+enum Role {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+enum OpType {
+  INSERT
+  DELETE
 }

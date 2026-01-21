@@ -2,8 +2,11 @@
     {
       "extends": "@repo/typescript-config/base.json", // If you have a shared base config
       "compilerOptions": {
-        "outDir": "./dist",
-        "rootDir": "./src"
+        "outDir": "dist",
+        "rootDir": "src",
+        "module": "es2022", // Or "ESNext" depending on your needs
+        "target": "ES2018",
+        "moduleResolution": "bundler"
       },
       "include": ["src/**/*.ts"],
       "exclude": ["node_modules", "dist"]

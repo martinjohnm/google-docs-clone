@@ -1,7 +1,8 @@
 import { Op, OpType } from "@repo/types/ot-types"
 import { randomUUID } from "crypto"
-import { socketManager, User } from "./SocketManager.js"
 import { applyOp, tieBreak, transformAgainstSequence } from "@repo/ot-core"
+import { socketManager, User } from "./SocketManager.js"
+import { persistanceQueue } from "../persistance/queue.js"
 
 
 
@@ -54,7 +55,6 @@ export class Room {
         this.history.push(transformed)
         this.rev += 1
 
-        console.log(this.doc, this.rev, transformed.rev);
         
 
         // sent events to connected clients
@@ -86,5 +86,11 @@ export class Room {
             })
 
         }
+
+        // db write after broadcast // IMPORTANT
+        persistanceQueue.push({
+            op : transformed,
+            version : this.rev
+        })
     }
 }

@@ -14,12 +14,13 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.0.1",
     "@prisma/client": "^7.0.1",
-    "@repo/ot-core" : "*",
-    "@repo/db": "*",
-    "@repo/types" : "*",
+    "@repo/db": "^0.0.0",
+    "@repo/ot-core": "*",
+    "@repo/types": "*",
     "@types/ws": "^8.18.1",
     "crypto": "^1.0.1",
     "dotenv": "^16.0.3",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.16.3",
     "tsx": "^4.20.6",
     "ws": "^8.18.3"

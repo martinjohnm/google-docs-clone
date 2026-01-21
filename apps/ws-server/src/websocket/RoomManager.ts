@@ -1,7 +1,8 @@
 import { MESSAGE_INPUT_TYPE, RoomOutputType, RoomType } from "@repo/types/ws-types";
 import { Room } from "./Room.js";
-import { socketManager, User } from "./SocketManager.js";
 import { Op, OpType } from "@repo/types/ot-types";
+import { socketManager, User } from "./SocketManager.js";
+import { prisma } from "@repo/db";
 
 
 
@@ -37,6 +38,16 @@ export class RoomManager {
         this.rooms = this.rooms.filter((r) => r.roomId !== roomId)
     }
 
+    getOrLoad(roomId : string) : Room {
+        const room = this.rooms.find(r => r.roomId === roomId)
+        if (!room) {
+            const newInMemoryRoom = new Room()
+            return newInMemoryRoom
+        } else {
+            return room
+        }
+    }
+
     
 
     private addHandler(user: User) {
@@ -45,8 +56,27 @@ export class RoomManager {
 
             if (message.type == RoomType.INIT_ROOM) {
                 
-            
+                
                 const room = new Room()
+                
+                const newDoc = await prisma.document.create({
+                    data : {
+                        id : room.roomId,
+                        title : "untitled",
+                        version : room.rev,
+                        members : {
+                            create : [
+                                {
+                                    userId : user.id,
+                                    role : "OWNER"
+                                }
+                            ]
+                        }
+                    }
+                })
+                
+                
+
                 this.rooms.push(room)
                 socketManager.addUser(user, room.roomId)
                 socketManager.broadCast(room.roomId, {
@@ -61,15 +91,24 @@ export class RoomManager {
             }
 
             if (message.type === RoomType.JOIN_ROOM) {
+
+                // const roomInDb = await prisma.document.findUnique({
+                //     where : {
+                //         id : message.data.roomId
+                //     }
+                // })
+                // if (!roomInDb) {
+                //     console.error("No such room created!")
+                //     return
+                // }
+
+                // if the room is present in the server check here
+                // const room = this.getOrLoad(roomInDb.id)
+
                 const room = this.rooms.find(r => r.roomId === message.data.roomId)
-                console.log(room);
-                
                 if (!room) {
-                    console.error("No such room present!")
                     return
                 }
-                console.log(room.roomId);
-                
                 socketManager.addUser(user, room.roomId)
                 socketManager.broadCast(room.roomId, {
                     type : RoomOutputType.USER_JOINDED,
@@ -84,7 +123,6 @@ export class RoomManager {
             if (message.type === OpType.INSERT) {
                 const room = this.rooms.find(r => r.roomId === message.data.roomId)
                                 
-                console.log(message.data);
                 
                 if (!room) {
                     console.error("No such room present!")
@@ -97,7 +135,6 @@ export class RoomManager {
 
             if (message.type === OpType.DELETE) {
                 const room = this.rooms.find(r => r.roomId === message.data.roomId)
-                console.log(message.data);
                 
                 if (!room) {
                     console.error("No such room present!")

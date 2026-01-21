@@ -27,6 +27,7 @@ export const useUserSignUp = () => {
             console.log(res.data);
             setAuth({
                 user : res.data.user,
+                token : res.data.token,
                 loading : false,
                 error : null
             })
@@ -35,6 +36,7 @@ export const useUserSignUp = () => {
         } catch(err  :any) {    
             setAuth({
                 user: null,
+                token : null,
                 loading: false,
                 error: err.response?.data?.message || "Not authenticated"
             });
