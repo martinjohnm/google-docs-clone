@@ -9,6 +9,7 @@ import { UserProtection } from './protected/UserProtection'
 import { useFetchInitialData } from './hooks/user/useFetchInitialData'
 import { userAtom } from './store/auth/auth.state'
 import { LoginSignupWrap } from './protected/LoginSignupWrap'
+import { DocumentPage } from './pages/DocumentPage'
 
 function App() {
 
@@ -37,6 +38,7 @@ function AuthApp () {
         <BrowserRouter >
           <Routes>
               <Route path='/' element={<UserProtection><HomePage/></UserProtection>}/>
+              <Route path='document/:id' element={<UserProtection><DocumentPage/></UserProtection>}/>
               <Route path="/signup" element={<LoginSignupWrap><SignupPage/></LoginSignupWrap>}/>
               <Route path='/login' element={<LoginSignupWrap><LoginPage/></LoginSignupWrap>}/>
           </Routes>
