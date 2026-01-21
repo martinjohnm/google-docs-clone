@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router"
 import { DocumentEditComponent } from "../components/DocumentEditComponent"
 import { useGetExistingDocument } from "../hooks/document/useGetExistingDocument"
 import { useEffect } from "react"
+import { MESSAGE_INPUT_TYPE, RoomType } from "@repo/types/ws-types"
 
 
 export const DocumentPage = () => {
@@ -13,24 +14,39 @@ export const DocumentPage = () => {
     const {logoutUser} = useUserLogout()
     const navi = useNavigate()
 
+   
+    const {document} = useGetExistingDocument(params.id ?? "")
+      
+    
     useEffect(() => {
     
         if (!params.id) {
             navi("/")
         }
-    
-    }, [socket, params])
-    
-    const {document} = useGetExistingDocument(params.id ?? "")
-  
+        
+        if (!socket) return
 
-    console.log(document);
+        socket.send(
+            JSON.stringify({
+                type : RoomType.JOIN_ROOM,
+                data : {
+                    roomId : params.id
+                }
+            } as MESSAGE_INPUT_TYPE)
+        )
+
+    }, [socket, params, document])
     
-    
 
 
-
-    return <div>
+    return (
+    (!socket || !document) ?  (
+    <div>
+        Loading
+    </div>
+        ) : (
+            
+    <div>
         <div className="h-18 bg-slate-200 grid grid-cols-3 justify-center items-center">
             <div>
 
@@ -45,7 +61,7 @@ export const DocumentPage = () => {
         <div className="max-w-7xl mx-auto container h-screen bg-slate-300 mt-10 p-10">
             <div className="w-full h-full">
                 
-                {/* <DocumentEditComponent room={room} socket={socket} initialDoc={initialDoc} initialVersion={initialVersion}/> */}
+                <DocumentEditComponent room={params.id ?? ""} socket={socket} initialDoc={document.doc} initialVersion={document.version}/> 
             
             </div>
 
@@ -53,5 +69,6 @@ export const DocumentPage = () => {
             
         </div>
         
-    </div>
+    </div>)
+    )
 }
