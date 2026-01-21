@@ -8,7 +8,7 @@ interface OpsArrType {
     createdAt: Date;
     userId: string;
     documentId: string;
-    type: OpType;
+    type: any;
     position: number;
     text: string | null;
 }
