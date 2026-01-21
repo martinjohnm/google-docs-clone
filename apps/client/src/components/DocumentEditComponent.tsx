@@ -6,7 +6,7 @@ import { OtTransport } from "../utils/OtTransport"
 import { useRef } from "react"
 
 
-export const HomePageWithROomId  = ({room, socket, initialDoc, initialVersion} : {room : string, socket : WebSocket, initialDoc : string, initialVersion : number}) => {
+export const DocumentEditComponent  = ({room, socket, initialDoc, initialVersion} : {room : string, socket : WebSocket, initialDoc : string, initialVersion : number}) => {
 
 
     // console.log(`initDoc=${initialDoc} initVer=${initialVersion} roomId=${room }`);

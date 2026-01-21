@@ -7,3 +7,4 @@ export const SIGNUP_USER = `${BE_URL}/auth/signup-local`
 export const LOGOUT_USER = `${BE_URL}/auth/logout`
 
 export const CREATE_DOC = `${BE_URL}/doc/create`
+export const GET_DOC = `${BE_URL}/doc/get`
