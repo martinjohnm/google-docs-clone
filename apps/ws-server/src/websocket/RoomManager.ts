@@ -2,7 +2,7 @@ import { MESSAGE_INPUT_TYPE, RoomOutputType, RoomType } from "@repo/types/ws-typ
 import { Room } from "./Room.js";
 import { Op, OpType } from "@repo/types/ot-types";
 import { socketManager, User } from "./SocketManager.js";
-import { prisma } from "@repo/db";
+import { prisma, Role } from "@repo/db";
 
 
 
@@ -11,10 +11,13 @@ export class RoomManager {
     
     private rooms: Room[]
     private users: User[]
+    // access cache maping { Room1: { User1 : Role, User2 : Role ..., etc }, Room2 : { User3 : Role, User2 : Role ..., etc } .. and so on }
+    private accessCache : Map<string, Map<string, Role>>
 
     constructor() {
         this.rooms = []
         this.users = []
+        this.accessCache = new Map()
     }
 
     addUser(user: User) {
@@ -59,25 +62,10 @@ export class RoomManager {
                 
                 const room = new Room()
                 
-                const newDoc = await prisma.document.create({
-                    data : {
-                        id : room.roomId,
-                        title : "untitled",
-                        version : room.rev,
-                        members : {
-                            create : [
-                                {
-                                    userId : user.id,
-                                    role : "OWNER"
-                                }
-                            ]
-                        }
-                    }
-                })
-                
                 
 
                 this.rooms.push(room)
+                
                 socketManager.addUser(user, room.roomId)
                 socketManager.broadCast(room.roomId, {
                     type : RoomOutputType.ROOM_CREATED,

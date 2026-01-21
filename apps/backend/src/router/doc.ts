@@ -144,8 +144,7 @@ router.get("/get/:id", UserProtectionMiddleware, async (req, res) => {
         
         res.status(OK).json({
             message : "Document fetched successfully",
-            document : existingDoc,
-            snapshot : existingDoc.snapshots[0]
+            document : documentData
         })
         return
 
