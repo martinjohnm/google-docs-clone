@@ -17,7 +17,6 @@ export const useFetchInitialData = () => {
         const res = await axios.get(GET_USER, {
           withCredentials: true
         });
-        console.log(res.data.token);
         
         setAuth({
           user: res.data.user,
