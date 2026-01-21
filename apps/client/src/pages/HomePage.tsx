@@ -18,7 +18,7 @@ export const HomePage = () => {
     const init_room = () => {
         socket?.send(JSON.stringify({
             type : RoomType.INIT_ROOM
-        }))
+        } as MESSAGE_INPUT_TYPE))
     }
 
     const [initialDoc, setInitalDoc] = useState<string | null>(null)

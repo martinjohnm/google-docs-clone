@@ -16,7 +16,10 @@ export enum UserType {
 }
 
 type INIT_ROOM = {
-    type : RoomType.INIT_ROOM
+    type : RoomType.INIT_ROOM,
+    data : {
+        userId : string
+    }
 }
 type JOIN_ROOM = {
     type : RoomType.JOIN_ROOM,

@@ -1,15 +1,17 @@
 import { MESSAGE_OUTPUT_TYPE } from "@repo/types/ws-types";
 import { randomUUID } from "crypto";
 import { WebSocket } from "ws";
+import { verifyJwtToken } from "../utils/jwt.utils";
 
 
 export class User {
     public socket : WebSocket
     public id : string
 
-    constructor(socket : WebSocket) {
+    constructor(token : string, socket : WebSocket) {
+        const jwtDecoded = verifyJwtToken(token)
         this.socket = socket
-        this.id = randomUUID();
+        this.id = jwtDecoded.id;
     }
 }
 

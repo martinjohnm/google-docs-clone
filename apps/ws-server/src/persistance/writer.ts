@@ -4,7 +4,6 @@ import { persistanceQueue } from "./queue.js";
 
 
 
-
 export async function startWriter() {
     while (true) {
         if (persistanceQueue.length === 0) {
@@ -16,6 +15,12 @@ export async function startWriter() {
         if (!op) continue
 
         console.log(op);
-        
+
+        await prisma.operation.create({
+            data : {
+                version : op.version,
+                
+            }
+        })
     }
 }

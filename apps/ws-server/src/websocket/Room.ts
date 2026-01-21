@@ -88,6 +88,9 @@ export class Room {
         }
 
         // db write after broadcast // IMPORTANT
-        persistanceQueue.push(transformed)
+        persistanceQueue.push({
+            op : transformed,
+            version : this.rev
+        })
     }
 }
