@@ -139,6 +139,8 @@ router.get("/get/:id", UserProtectionMiddleware, async (req, res) => {
 
 
         const documentData = reconstructorFromSnapshot(latestSnapshot, operationsAfterLatestSnapshot)
+        console.log(documentData);
+        
         
         res.status(OK).json({
             message : "Document fetched successfully",
