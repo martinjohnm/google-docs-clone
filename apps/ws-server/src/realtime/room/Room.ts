@@ -1,8 +1,9 @@
 import { Op, OpType } from "@repo/types/ot-types"
 import { randomUUID } from "crypto"
 import { applyOp, tieBreak, transformAgainstSequence } from "@repo/ot-core"
-import { socketManager, User } from "./SocketManager.js"
-import { persistanceQueue } from "../persistance/queue.js"
+import { socketManager } from "../socket/SocketManager.js"
+import { persistanceQueue } from "../../persistance/queue.js"
+import { User } from "../../auth/User.js"
 
 
 

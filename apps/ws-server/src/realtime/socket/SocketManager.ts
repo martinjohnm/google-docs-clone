@@ -1,23 +1,9 @@
 import { MESSAGE_OUTPUT_TYPE } from "@repo/types/ws-types";
 import { randomUUID } from "crypto";
 import { WebSocket } from "ws";
-import { verifyJwtToken } from "../utils/jwt.utils";
+import { verifyJwtToken } from "../../utils/jwt.utils";
+import { User } from "../../auth/User";
 
-
-export class User {
-    public socket : WebSocket
-    // unique id for the user in the room 
-    public id : string
-    // id of the user from Database
-    public userIdFromDb : string
-
-    constructor(token : string, socket : WebSocket) {
-        const jwtDecoded = verifyJwtToken(token)
-        this.socket = socket
-        this.userIdFromDb = jwtDecoded.id;
-        this.id = randomUUID()
-    }
-}
 
 
 
