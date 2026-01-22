@@ -30,7 +30,7 @@ export const DocumentPage = () => {
             JSON.stringify({
                 type : RoomType.JOIN_ROOM,
                 data : {
-                    roomId : params.id
+                    docId : params.id
                 }
             } as MESSAGE_INPUT_TYPE)
         )
