@@ -3,10 +3,10 @@
 import "dotenv/config"
 
 import { WebSocketServer } from "ws";
-import { RoomManager } from "./websocket/RoomManager.js";
-import { User } from "./websocket/SocketManager.js";
+import { RoomManager } from "./realtime/room/RoomManager.js";
 import { startWriter } from "./persistance/writer.js";
 import url from "url"
+import { User } from "./auth/User.js";
 
 startWriter()
 

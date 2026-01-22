@@ -1,8 +1,9 @@
 import { MESSAGE_INPUT_TYPE, RoomOutputType, RoomType } from "@repo/types/ws-types";
 import { Room } from "./Room.js";
 import { Op, OpType } from "@repo/types/ot-types";
-import { socketManager, User } from "./SocketManager.js";
+import { socketManager } from "../socket/SocketManager.js";
 import { prisma, Role } from "@repo/db";
+import { User } from "../../auth/User.js";
 
 
 
@@ -10,30 +11,30 @@ import { prisma, Role } from "@repo/db";
 export class RoomManager {
     
     private rooms: Room[]
-    private users: User[]
+    // private users: User[]
     // access cache maping { Room1: { User1 : Role, User2 : Role ..., etc }, Room2 : { User3 : Role, User2 : Role ..., etc } .. and so on }
     private accessCache : Map<string, Map<string, Role>>
 
     constructor() {
         this.rooms = []
-        this.users = []
+        // this.users = []
         this.accessCache = new Map()
     }
 
     addUser(user: User) {
-        this.users.push(user)
+        // this.users.push(user)
         this.addHandler(user)
     }
 
     removeUser(user: User) {  
-        const u = this.users.find((u) => u.socket === user.socket)
-        if (!u) {
-            console.error("User not found");
-            return;
-        }
+        // const u = this.users.find((u) => u.socket === user.socket)
+        // if (!u) {
+        //     console.error("User not found");
+        //     return;
+        // }
 
         
-        this.removeHandler(u)
+        // this.removeHandler(u)
 
     }
 
@@ -147,7 +148,7 @@ export class RoomManager {
                 }
 
                 socketManager.removeUser(user, room.roomId)
-                this.users = this.users.filter((u) => u.socket !== user.socket)
+                // this.users = this.users.filter((u) => u.socket !== user.socket)
             }
         })
     }
