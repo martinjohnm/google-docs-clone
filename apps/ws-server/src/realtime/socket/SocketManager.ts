@@ -1,20 +1,18 @@
 import { MESSAGE_OUTPUT_TYPE } from "@repo/types/ws-types";
-import { randomUUID } from "crypto";
-import { WebSocket } from "ws";
-import { verifyJwtToken } from "../../utils/jwt.utils";
 import { User } from "../../auth/User";
 
 
-
+export type UserId = string
+export type RoomId = string
 
 class SocketManager {
     private static instance : SocketManager
-    private interestedSockets : Map<string, User[]> // mapping socketId with corresponding user obj socketId => User
-    private userRoomMapping : Map<string, string[]> // mapping userId with corresponding socketId
+    private roomUserMapping : Map<RoomId, User[]> // mapping socketId with corresponding user obj socketId => User
+    private userRoomMapping : Map<UserId, RoomId[]> // mapping userId with corresponding socketId
 
     private constructor() {
-        this.interestedSockets = new Map<string, User[]>()
-        this.userRoomMapping = new Map<string, string[]>()
+        this.roomUserMapping = new Map<RoomId, User[]>()
+        this.userRoomMapping = new Map<UserId, RoomId[]>()
     }
 
     static getInstance() {
@@ -27,8 +25,8 @@ class SocketManager {
     }
 
     addUser(user: User, roomId: string) {
-        this.interestedSockets.set(roomId, [
-            ...(this.interestedSockets.get(roomId) || []),
+        this.roomUserMapping.set(roomId, [
+            ...(this.roomUserMapping.get(roomId) || []),
             user
         ]);
 
@@ -39,7 +37,7 @@ class SocketManager {
     }
 
     broadCast(roomId: string, message: MESSAGE_OUTPUT_TYPE) {
-        const users = this.interestedSockets.get(roomId)
+        const users = this.roomUserMapping.get(roomId)
         if (!users) {
             console.error("No users in room")
             return;
@@ -56,18 +54,18 @@ class SocketManager {
             console.error("User is not interested in any room")
             return;
         }
-        const interestedUsers = this.interestedSockets.get(roomId) || []
+        const interestedUsers = this.roomUserMapping.get(roomId) || []
         const remainingUsers = interestedUsers.filter(u => 
             u.id !== user.id
         )
 
-        this.interestedSockets.set(
+        this.roomUserMapping.set(
             roomId,
             remainingUsers
         )
 
-        if (this.interestedSockets.get(roomId)?.length === 0) {
-            this.interestedSockets.delete(roomId)
+        if (this.roomUserMapping.get(roomId)?.length === 0) {
+            this.roomUserMapping.delete(roomId)
         }
 
         // this.userRoomMapping.delete(user.id)

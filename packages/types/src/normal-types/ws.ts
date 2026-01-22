@@ -18,14 +18,14 @@ export enum UserType {
 type INIT_ROOM = {
     type : RoomType.INIT_ROOM,
     data : {
-        userId : string
+        userId : string,
+        docId : string
     }
 }
 type JOIN_ROOM = {
     type : RoomType.JOIN_ROOM,
     data : {
-        roomId : string,
-        
+        docId : string
     }
 }
 type DELETE_ROOM = {
@@ -46,14 +46,14 @@ type DELETE_USER_FROM_ROOM = {
 type DELETE_OP_FROM_CLIENT = {
     type : OpType.DELETE,
     data : {
-        roomId : string,
+        docId : string,
         op : Op
     }
 }
 type INSERT_OP_FROM_CLIENT = {
     type : OpType.INSERT,
     data : {
-        roomId : string,
+        docId : string,
         op: Op
     }
 }

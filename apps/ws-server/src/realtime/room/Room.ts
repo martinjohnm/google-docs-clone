@@ -4,15 +4,16 @@ import { applyOp, tieBreak, transformAgainstSequence } from "@repo/ot-core"
 import { socketManager } from "../socket/SocketManager.js"
 import { persistanceQueue } from "../../persistance/queue.js"
 import { User } from "../../auth/User.js"
+import { DocContent, DocVersion, RoomId } from "./RoomTypes.js"
 
 
 
 
 export class Room {
-    public roomId : string
+    public roomId : RoomId
     
-    doc : string
-    rev : number
+    doc : DocContent
+    rev : DocVersion
     private history : Op[]
     private users : User[]
     

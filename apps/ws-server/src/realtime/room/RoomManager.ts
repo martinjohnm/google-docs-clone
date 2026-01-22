@@ -1,28 +1,27 @@
 import { MESSAGE_INPUT_TYPE, RoomOutputType, RoomType } from "@repo/types/ws-types";
 import { Room } from "./Room.js";
-import { Op, OpType } from "@repo/types/ot-types";
+import { OpType } from "@repo/types/ot-types";
 import { socketManager } from "../socket/SocketManager.js";
-import { prisma, Role } from "@repo/db";
+import { Role } from "@repo/db";
 import { User } from "../../auth/User.js";
+import { DocId, RoomId, UserId } from "./RoomTypes.js";
 
 
 
 
 export class RoomManager {
     
-    private rooms: Room[]
-    // private users: User[]
+    private docIdToRoomMap: Map<DocId, Room>
     // access cache maping { Room1: { User1 : Role, User2 : Role ..., etc }, Room2 : { User3 : Role, User2 : Role ..., etc } .. and so on }
-    private accessCache : Map<string, Map<string, Role>>
+    private accessCache : Map<RoomId, Map<UserId, Role>>
 
     constructor() {
-        this.rooms = []
+        this.docIdToRoomMap = new Map()
         // this.users = []
         this.accessCache = new Map()
     }
 
     addUser(user: User) {
-        // this.users.push(user)
         this.addHandler(user)
     }
 
@@ -38,21 +37,12 @@ export class RoomManager {
 
     }
 
-    removeRoom(roomId: string) {
-        this.rooms = this.rooms.filter((r) => r.roomId !== roomId)
-    }
-
-    getOrLoad(roomId : string) : Room {
-        const room = this.rooms.find(r => r.roomId === roomId)
-        if (!room) {
-            const newInMemoryRoom = new Room()
-            return newInMemoryRoom
-        } else {
-            return room
+    removeRoom(docId: DocId) {
+        if (this.docIdToRoomMap.has(docId)) {
+            this.docIdToRoomMap.delete(docId)
         }
     }
 
-    
 
     private addHandler(user: User) {
         user.socket.on("message", async (data) => {
@@ -60,41 +50,32 @@ export class RoomManager {
 
             if (message.type == RoomType.INIT_ROOM) {
                 
+                if (!this.docIdToRoomMap.has(message.data.docId)) {
+                    const room = new Room()
                 
-                const room = new Room()
-                
-                
+                    this.docIdToRoomMap.set(message.data.docId, room)
+                    
+                    socketManager.addUser(user, room.roomId)
+                    socketManager.broadCast(room.roomId, {
+                        type : RoomOutputType.ROOM_CREATED,
+                        data : {
+                            roomId : room.roomId,
+                            doc : room.doc,
+                            version : room.rev
+                        }
+                    })
+                } else {
 
-                this.rooms.push(room)
+                }
                 
-                socketManager.addUser(user, room.roomId)
-                socketManager.broadCast(room.roomId, {
-                    type : RoomOutputType.ROOM_CREATED,
-                    data : {
-                        roomId : room.roomId,
-                        doc : room.doc,
-                        version : room.rev
-                    }
-                })
+                
                 
             }
 
             if (message.type === RoomType.JOIN_ROOM) {
 
-                // const roomInDb = await prisma.document.findUnique({
-                //     where : {
-                //         id : message.data.roomId
-                //     }
-                // })
-                // if (!roomInDb) {
-                //     console.error("No such room created!")
-                //     return
-                // }
-
-                // if the room is present in the server check here
-                // const room = this.getOrLoad(roomInDb.id)
-
-                const room = this.rooms.find(r => r.roomId === message.data.roomId)
+               
+                const room = this.docIdToRoomMap.get(message.data.docId)
                 if (!room) {
                     return
                 }
@@ -110,7 +91,7 @@ export class RoomManager {
             }
 
             if (message.type === OpType.INSERT) {
-                const room = this.rooms.find(r => r.roomId === message.data.roomId)
+                const room = this.docIdToRoomMap.get(message.data.docId)
                                 
                 
                 if (!room) {
@@ -123,7 +104,7 @@ export class RoomManager {
             }
 
             if (message.type === OpType.DELETE) {
-                const room = this.rooms.find(r => r.roomId === message.data.roomId)
+                const room = this.docIdToRoomMap.get(message.data.docId)
                 
                 if (!room) {
                     console.error("No such room present!")
@@ -137,20 +118,6 @@ export class RoomManager {
         })
     }
 
-    private removeHandler(user: User) {
-        user.socket.on("message", async (data) => {
-            const message = JSON.parse(data.toString()) as MESSAGE_INPUT_TYPE
-            if (message.type == RoomType.DELETE_ROOM) {
-                const room = this.rooms.find(r => r.roomId === message.data.roomId)
-                if (!room) {
-                    console.error("THere is no such room")
-                    return
-                }
-
-                socketManager.removeUser(user, room.roomId)
-                // this.users = this.users.filter((u) => u.socket !== user.socket)
-            }
-        })
-    }
+    
 
 }
