@@ -35,7 +35,7 @@ export const DocumentPage = () => {
             } as MESSAGE_INPUT_TYPE)
         )
 
-    }, [socket, params, document])
+    }, [socket, params])
     
 
 
