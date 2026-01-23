@@ -51,9 +51,8 @@ export async function loadRoomFromDb(docId : DocId) : Promise<Room | null> {
 
 
     const documentData = reconstructorFromSnapshot(latestSnapshot, operationsAfterLatestSnapshot)
-    console.log(documentData);
     
 
 
-    return new Room("", docId)
+    return new Room(docId, documentData.doc, documentData.version)
 }

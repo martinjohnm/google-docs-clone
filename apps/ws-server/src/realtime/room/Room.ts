@@ -17,10 +17,10 @@ export class Room {
     private history : Op[]
     private users : User[]
     
-    constructor(initial = "", roomId : DocId) {
+    constructor(roomId : DocId, initialContent : string, initialVersion : number) {
         this.roomId = roomId
-        this.doc = initial
-        this.rev = 0
+        this.doc = initialContent
+        this.rev = initialVersion
         this.history = []
         this.users = []
     }

@@ -55,6 +55,13 @@ export class RoomManager {
                     
                     const room = await loadRoomFromDb(message.data.docId)
 
+                    if (!room) {
+                        socketManager.broadCast("", {
+                            type : RoomOutputType.NO_ROOM_FOUND
+                        })
+                        return
+                    }
+
                     this.docIdToRoomMap.set(message.data.docId, room)
                     
                     socketManager.addUser(user, room.roomId)

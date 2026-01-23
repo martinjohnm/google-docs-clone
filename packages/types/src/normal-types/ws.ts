@@ -66,7 +66,8 @@ export type MESSAGE_INPUT_TYPE = INIT_ROOM | JOIN_ROOM | DELETE_ROOM | DELETE_OP
 
 export enum RoomOutputType {
     ROOM_CREATED = "room_created",
-    USER_JOINDED = "user_joined"
+    USER_JOINDED = "user_joined",
+    NO_ROOM_FOUND = "no_room_found"
 } 
 
 export type ROOM_CREATED = {
@@ -76,6 +77,11 @@ export type ROOM_CREATED = {
         doc : string,
         version : number
     }
+}
+
+export type NO_ROOM_FOUND = {
+    type : RoomOutputType.NO_ROOM_FOUND,
+    
 }
 
 export type USER_JOINED = {
@@ -103,4 +109,4 @@ export type NO_OP_FROM_SERVER = {
 }
 
 
-export type MESSAGE_OUTPUT_TYPE = ROOM_CREATED | USER_JOINED | INSERT_OP_FROM_SERVER | DELETE_OP_FROM_SERVER | NO_OP_FROM_SERVER
+export type MESSAGE_OUTPUT_TYPE = ROOM_CREATED | NO_ROOM_FOUND | USER_JOINED | INSERT_OP_FROM_SERVER | DELETE_OP_FROM_SERVER | NO_OP_FROM_SERVER
