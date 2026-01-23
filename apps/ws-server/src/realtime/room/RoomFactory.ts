@@ -32,7 +32,7 @@ export async function loadRoomAndPermissionsFromDb(userIdFromDb : string, docId 
         return null
     }
     
-
+    // reconstructing document from snapshot and ops
     const latestSnapshot = existingDoc.snapshots[0]
 
     if (!latestSnapshot) {
