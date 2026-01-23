@@ -1,12 +1,15 @@
-import { prisma } from "@repo/db";
+import { prisma, Role } from "@repo/db";
 import { Room } from "./Room";
 import { DocId } from "./RoomTypes";
 import { reconstructorFromSnapshot } from "@repo/ot-core";
 
+interface RoomAndUserRole {
+    room : Room,
+    role : Role
+}
 
 
-
-export async function loadRoomAndPermissionsFromDb(userIdFromDb : string, docId : DocId) : Promise<Room | null> {
+export async function createRoomAndLoadPermissionsFromDb(userIdFromDb : string, docId : DocId) : Promise<RoomAndUserRole | null> {
 
 
 
@@ -28,7 +31,7 @@ export async function loadRoomAndPermissionsFromDb(userIdFromDb : string, docId 
         }
     })
 
-    if (!existingDoc) {
+    if (!existingDoc || !existingDoc.members[0]?.role) {
         return null
     }
     
@@ -60,5 +63,12 @@ export async function loadRoomAndPermissionsFromDb(userIdFromDb : string, docId 
     
 
 
-    return new Room(docId, documentData.doc, documentData.version)
+    return {
+        room : new Room(docId, documentData.doc, documentData.version),
+        role : existingDoc.members[0]?.role
+    }
+}
+
+export async function loadUserRoleFromDb(userIdFromDb: string, docId : string) : Promise<Role> {
+    return "OWNER"
 }

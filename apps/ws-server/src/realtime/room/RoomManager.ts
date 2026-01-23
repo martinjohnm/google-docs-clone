@@ -5,7 +5,7 @@ import { socketManager } from "../socket/SocketManager.js";
 import { Role } from "@repo/db";
 import { User } from "../../auth/User.js";
 import { DocId, RoomId, UserId } from "./RoomTypes.js";
-import { loadRoomAndPermissionsFromDb } from "./RoomFactory.js";
+import { createRoomAndLoadPermissionsFromDb, loadUserRoleFromDb } from "./RoomFactory.js";
 
 
 
@@ -36,6 +36,25 @@ export class RoomManager {
         }
     }
 
+    addToAccessCache(user: User, docId: DocId, role : Role) {
+        if (this.accessCache.has(docId)) {
+            const existingUserRoles = this.accessCache.get(docId)
+            if (!existingUserRoles) return
+
+            if (existingUserRoles.has(user.userIdFromDb)) {
+                return
+            } else {
+                existingUserRoles.set(user.userIdFromDb, role)
+            }
+            this.accessCache.set(docId, existingUserRoles)
+        } else {
+            const userRoleMap = new Map()
+            userRoleMap.set(user.userIdFromDb, role)
+            this.accessCache.set(docId, userRoleMap)
+        }
+
+    }
+
 
     private addHandler(user: User) {
         user.socket.on("message", async (data) => {
@@ -47,26 +66,56 @@ export class RoomManager {
                 
                 if (!this.docIdToRoomMap.has(docId)) {
                     
-                    const room = await loadRoomAndPermissionsFromDb(user.userIdFromDb, docId)
+                    const roomAndUserRole = await createRoomAndLoadPermissionsFromDb(user.userIdFromDb, docId)
+                    const room = roomAndUserRole?.room
+                    const role = roomAndUserRole?.role
+                    if (!room || !role) {
+                        
+                        return
+                    }
+
+                    this.docIdToRoomMap.set(docId, room)
+                    this.addToAccessCache(user, docId, role)
+                    console.log(this.accessCache, "init");
+                    
+
+                    socketManager.addUser(user, docId)
+                    socketManager.broadCast(docId, {
+                        type : RoomOutputType.ROOM_CREATED,
+                        data : {
+                            roomId : docId,
+                            doc : room.doc,
+                            version : room.rev
+                        }
+                    })
+                } else {
+                    const userRole = await loadUserRoleFromDb(user.userIdFromDb, docId)
+                    const role = userRole
+                    if (!role) {
+                        
+                        return
+                    }
+
+                    const room = this.docIdToRoomMap.get(docId)
 
                     if (!room) {
                         
                         return
                     }
 
-                    this.docIdToRoomMap.set(docId, room)
+                    this.addToAccessCache(user, docId, role)
+                    console.log(this.accessCache, "join");
                     
-                    socketManager.addUser(user, room.roomId)
-                    socketManager.broadCast(room.roomId, {
-                        type : RoomOutputType.ROOM_CREATED,
+
+                    socketManager.addUser(user, docId)
+                    socketManager.broadCast(docId, {
+                        type : RoomOutputType.USER_JOINDED,
                         data : {
-                            roomId : room.roomId,
+                            roomId : docId,
                             doc : room.doc,
                             version : room.rev
                         }
                     })
-                } else {
-
                 }
                 
                 
