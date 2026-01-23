@@ -58,9 +58,7 @@ export class RoomManager {
                     const room = await loadRoomFromDb(docId)
 
                     if (!room) {
-                        socketManager.broadCast("", {
-                            type : RoomOutputType.NO_ROOM_FOUND
-                        })
+                        
                         return
                     }
 
