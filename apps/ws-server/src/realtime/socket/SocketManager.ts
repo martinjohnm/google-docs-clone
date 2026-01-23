@@ -48,7 +48,23 @@ class SocketManager {
         })
     }
 
-    removeUser(user: User, roomId : string) {
+    removeUser(user : User) {
+        const rooms = this.userRoomMapping.get(user.id)
+        if (!rooms || rooms.length === 0) {
+            console.error("User is not interested in any room")
+            return;
+        }
+
+        rooms.forEach((roomId) => {
+            this.removeUserFromRoom(user, roomId)
+        })
+
+
+        
+        
+    }
+
+    removeUserFromRoom(user: User, roomId : string) {
         const rooms = this.userRoomMapping.get(user.id)
         if (!rooms || rooms.length === 0) {
             console.error("User is not interested in any room")

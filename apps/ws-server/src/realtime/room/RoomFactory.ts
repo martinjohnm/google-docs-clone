@@ -6,7 +6,7 @@ import { reconstructorFromSnapshot } from "@repo/ot-core";
 
 
 
-export async function loadRoomFromDb(docId : DocId) : Promise<Room | null> {
+export async function loadRoomAndPermissionsFromDb(userIdFromDb : string, docId : DocId) : Promise<Room | null> {
 
 
 
@@ -19,6 +19,11 @@ export async function loadRoomFromDb(docId : DocId) : Promise<Room | null> {
                 orderBy : {
                     version : "desc"
                 }
+            },
+            members : {
+                where : {
+                    userId : userIdFromDb
+                }
             }
         }
     })
@@ -26,6 +31,8 @@ export async function loadRoomFromDb(docId : DocId) : Promise<Room | null> {
     if (!existingDoc) {
         return null
     }
+    console.log(existingDoc.members);
+    
 
     const latestSnapshot = existingDoc.snapshots[0]
 

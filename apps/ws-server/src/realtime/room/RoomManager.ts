@@ -5,7 +5,7 @@ import { socketManager } from "../socket/SocketManager.js";
 import { Role } from "@repo/db";
 import { User } from "../../auth/User.js";
 import { DocId, RoomId, UserId } from "./RoomTypes.js";
-import { loadRoomFromDb } from "./RoomFactory.js";
+import { loadRoomAndPermissionsFromDb } from "./RoomFactory.js";
 
 
 
@@ -27,15 +27,7 @@ export class RoomManager {
     }
 
     removeUser(user: User) {  
-        // const u = this.users.find((u) => u.socket === user.socket)
-        // if (!u) {
-        //     console.error("User not found");
-        //     return;
-        // }
-
-        
-        // this.removeHandler(u)
-
+        socketManager.removeUser(user,)
     }
 
     removeRoom(docId: DocId) {
@@ -55,7 +47,7 @@ export class RoomManager {
                 
                 if (!this.docIdToRoomMap.has(docId)) {
                     
-                    const room = await loadRoomFromDb(docId)
+                    const room = await loadRoomAndPermissionsFromDb(user.userIdFromDb, docId)
 
                     if (!room) {
                         
