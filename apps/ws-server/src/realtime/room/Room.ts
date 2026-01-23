@@ -4,21 +4,21 @@ import { applyOp, tieBreak, transformAgainstSequence } from "@repo/ot-core"
 import { socketManager } from "../socket/SocketManager.js"
 import { persistanceQueue } from "../../persistance/queue.js"
 import { User } from "../../auth/User.js"
-import { DocContent, DocVersion, RoomId } from "./RoomTypes.js"
+import { DocContent, DocId, DocVersion, RoomId } from "./RoomTypes.js"
 
 
 
 
 export class Room {
-    public roomId : RoomId
+    public roomId : DocId
     
     doc : DocContent
     rev : DocVersion
     private history : Op[]
     private users : User[]
     
-    constructor(initial = "") {
-        this.roomId = randomUUID()
+    constructor(initial = "", roomId : DocId) {
+        this.roomId = roomId
         this.doc = initial
         this.rev = 0
         this.history = []
