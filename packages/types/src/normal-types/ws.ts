@@ -31,7 +31,7 @@ type JOIN_ROOM = {
 type DELETE_ROOM = {
     type : RoomType.DELETE_ROOM,
     data : {
-        roomId : string,
+        docId : string,
         
     }
 }
@@ -39,7 +39,7 @@ type DELETE_ROOM = {
 type DELETE_USER_FROM_ROOM = {
     type : UserType.DELETE_USER,
     data : {
-        roomId : string
+        docId : string
     }
 }
 

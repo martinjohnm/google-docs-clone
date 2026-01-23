@@ -49,11 +49,13 @@ export class RoomManager {
         user.socket.on("message", async (data) => {
             const message = JSON.parse(data.toString()) as MESSAGE_INPUT_TYPE
 
+            const docId = message.data.docId
+
             if (message.type == RoomType.INIT_ROOM) {
                 
-                if (!this.docIdToRoomMap.has(message.data.docId)) {
+                if (!this.docIdToRoomMap.has(docId)) {
                     
-                    const room = await loadRoomFromDb(message.data.docId)
+                    const room = await loadRoomFromDb(docId)
 
                     if (!room) {
                         socketManager.broadCast("", {
@@ -62,7 +64,7 @@ export class RoomManager {
                         return
                     }
 
-                    this.docIdToRoomMap.set(message.data.docId, room)
+                    this.docIdToRoomMap.set(docId, room)
                     
                     socketManager.addUser(user, room.roomId)
                     socketManager.broadCast(room.roomId, {
@@ -84,7 +86,7 @@ export class RoomManager {
             if (message.type === RoomType.JOIN_ROOM) {
 
                
-                const room = this.docIdToRoomMap.get(message.data.docId)
+                const room = this.docIdToRoomMap.get(docId)
                 if (!room) {
                     return
                 }
@@ -100,7 +102,7 @@ export class RoomManager {
             }
 
             if (message.type === OpType.INSERT) {
-                const room = this.docIdToRoomMap.get(message.data.docId)
+                const room = this.docIdToRoomMap.get(docId)
                                 
                 
                 if (!room) {
@@ -113,7 +115,7 @@ export class RoomManager {
             }
 
             if (message.type === OpType.DELETE) {
-                const room = this.docIdToRoomMap.get(message.data.docId)
+                const room = this.docIdToRoomMap.get(docId)
                 
                 if (!room) {
                     console.error("No such room present!")
