@@ -13,7 +13,7 @@ export class RoomManager {
     
     private docIdToRoomMap: Map<DocId, Room>
     // access cache maping { Room1: { User1 : Role, User2 : Role ..., etc }, Room2 : { User3 : Role, User2 : Role ..., etc } .. and so on }
-    private accessCache : Map<RoomId, Map<UserId, Role>>
+    private accessCache : Map<DocId, Map<UserId, Role>>
 
     constructor() {
         this.docIdToRoomMap = new Map()
