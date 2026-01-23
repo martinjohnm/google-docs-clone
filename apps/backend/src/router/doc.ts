@@ -4,9 +4,8 @@ import { verifyJwtToken } from "../utils/jwttoken.utils";
 import { INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNPROCESSABLE_ENTITY } from "@repo/types/http-types";
 import { UserProtectionMiddleware } from "../middlewares/user.middleware";
 import { getUserFromDbUsingTokenFromCookies } from "../utils/db.utils";
-import { applyOp, transformAgainstSequence } from "@repo/ot-core";
+import { applyOp, reconstructorFromSnapshot, transformAgainstSequence } from "@repo/ot-core";
 import { Op } from "@repo/types/ot-types";
-import { reconstructorFromSnapshot } from "../ot-helpers/reconstructorFromSnapshot";
 
 
 

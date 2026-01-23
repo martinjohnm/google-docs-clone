@@ -25,3 +25,25 @@ export type OtServerDataResponse =
         op : Op,
         doc: string
     }
+
+
+
+export interface OpsArrType {
+    length: number | null;
+    id: string;
+    version: number;
+    createdAt: Date;
+    userId: string;
+    documentId: string;
+    type: any;
+    position: number;
+    text: string | null;
+}
+
+export interface SnapshotType  {
+    id: string;
+    version: number;
+    createdAt: Date;
+    content: string;
+    documentId: string;
+}
