@@ -21,7 +21,6 @@ wss.on("connection", function connection(ws, req) {
   
   
   const user = new User(token, ws)
-  console.log(user.id);
   
   roomManager.addUser(user)
 

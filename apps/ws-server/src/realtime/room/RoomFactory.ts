@@ -31,7 +31,6 @@ export async function loadRoomAndPermissionsFromDb(userIdFromDb : string, docId 
     if (!existingDoc) {
         return null
     }
-    console.log(existingDoc.members);
     
 
     const latestSnapshot = existingDoc.snapshots[0]
