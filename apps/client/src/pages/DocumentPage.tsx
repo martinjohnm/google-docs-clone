@@ -28,7 +28,7 @@ export const DocumentPage = () => {
 
         socket.send(
             JSON.stringify({
-                type : RoomType.JOIN_ROOM,
+                type : RoomType.INIT_ROOM,
                 data : {
                     docId : params.id
                 }
