@@ -1,10 +1,8 @@
 import { Op, OpType } from "@repo/types/ot-types"
-import { randomUUID } from "crypto"
 import { applyOp, tieBreak, transformAgainstSequence } from "@repo/ot-core"
-import { socketManager } from "../socket/SocketManager.js"
-import { persistanceQueue } from "../../persistance/queue.js"
 import { User } from "../../auth/User.js"
-import { DocContent, DocId, DocVersion, RoomId } from "./RoomTypes.js"
+import { DocContent, DocId, DocVersion } from "./RoomTypes.js"
+import { MESSAGE_OUTPUT_TYPE } from "@repo/types/ws-types"
 
 
 
@@ -31,14 +29,15 @@ export class Room {
         this.users.push(user)
     }
 
-    receiveOp(op: Op) {
+    receiveOp(op: Op) : MESSAGE_OUTPUT_TYPE {
         const tail = this.history.slice(op.rev)
         const transformed = transformAgainstSequence(op, tail,tieBreak)
 
         // if transform unsuccessful sent no_op
         if (!transformed) {
             // no op
-            socketManager.broadCast(this.roomId, {
+            
+            const no_op = {
                 type : OpType.NO_OP, 
                 data : {
                     ack : true,
@@ -47,8 +46,9 @@ export class Room {
                     op : null,
                     doc : this.doc
                 }
-            })
-            return
+            }
+
+            return no_op
         }
 
         // apply the transform first if it is valid
@@ -63,7 +63,7 @@ export class Room {
 
         if (op.type == OpType.INSERT) {
 
-            socketManager.broadCast(this.roomId, {
+            const insert_op = {
                 type : OpType.INSERT, 
                 data : {
                     ack : true, 
@@ -72,11 +72,12 @@ export class Room {
                     op : transformed,
                     doc : this.doc
                 }
-            })
-
+            }
+            return insert_op
             
         } else {
-            socketManager.broadCast(this.roomId, {
+            
+            const delete_op = {
                 type : OpType.DELETE, 
                 data : {
                     ack : true, 
@@ -85,14 +86,11 @@ export class Room {
                     op : transformed,
                     doc : this.doc
                 }
-            })
+            }
+            return delete_op
 
         }
 
-        // db write after broadcast // IMPORTANT
-        persistanceQueue.push({
-            op : transformed,
-            version : this.rev
-        })
+        
     }
 }

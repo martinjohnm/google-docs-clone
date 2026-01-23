@@ -7,13 +7,13 @@ import { RoomManager } from "./realtime/room/RoomManager.js";
 import { startWriter } from "./persistance/writer.js";
 import url from "url"
 import { User } from "./auth/User.js";
+import { socketManager } from "./realtime/socket/SocketManager.js";
 
 startWriter()
 
 const port = Number(process.env.PORT) || 8080
 const wss = new WebSocketServer({port})
 
-const roomManager = new RoomManager()
 
 wss.on("connection", function connection(ws, req) {
   //@ts-ignore
@@ -22,9 +22,10 @@ wss.on("connection", function connection(ws, req) {
   
   const user = new User(token, ws)
   
-  roomManager.addUser(user)
+  socketManager.onConnection(user)
 
   ws.on("close", () => {
-    roomManager.removeUser(user)
+    
+    socketManager.onDisconnect(user)
   })
-})
+}) 
