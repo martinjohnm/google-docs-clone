@@ -69,6 +69,16 @@ export async function createRoomAndLoadPermissionsFromDb(userIdFromDb : string, 
     }
 }
 
-export async function loadUserRoleFromDb(userIdFromDb: string, docId : string) : Promise<Role> {
-    return "OWNER"
+export async function loadUserRoleFromDb(userIdFromDb: string, docId : string) : Promise<Role | null> {
+
+    const docMember = await prisma.documentMember.findFirst({
+        where : {
+            documentId : docId,
+            userId : userIdFromDb
+        }
+    })
+
+    if (!docMember) return null
+
+    return docMember.role
 }
