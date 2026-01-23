@@ -2,7 +2,7 @@ import { Room } from "./Room.js";
 import { Op } from "@repo/types/ot-types";
 import { Role } from "@repo/db";
 import { User } from "../../auth/User.js";
-import { DocId, UserId } from "./RoomTypes.js";
+import { DocId, JoinRoomResult, UserId } from "./RoomTypes.js";
 import { createRoomAndLoadPermissionsFromDb, loadUserRoleFromDb } from "./RoomFactory.js";
 
 
@@ -61,29 +61,54 @@ export class RoomManager {
 
 
 
-    async createOrJoinRoom(user: User, docId : string) : Promise<Room | null> {
+    async createOrJoinRoom(user: User, docId : string) : Promise<JoinRoomResult> {
         if (!this.docIdToRoomMap.has(docId)) {
             const roomAndUserRole = await createRoomAndLoadPermissionsFromDb(user.userIdFromDb, docId)
             const room = roomAndUserRole?.room
             const role = roomAndUserRole?.role
-            if (!room || !role) return null
+            if (!room || !role) {
+                return {
+                    ok: false,
+                    reason: "ACCESS_DENIED"
+                }
+            }
 
             this.docIdToRoomMap.set(docId, room)
             this.addToAccessCache(user, docId, role)
             console.log(this.accessCache, "init");
-            return room
+            return {
+                ok : true,
+                doc : room.doc,
+                version: room.rev,
+                roomId : room.roomId
+            }
         } else {
             const userRole = await loadUserRoleFromDb(user.userIdFromDb, docId)
             const role = userRole
-            if (!role) return null
+            if (!role)  {
+                return {
+                    ok: false,
+                    reason: "ACCESS_DENIED"
+                }
+            }
 
             const room = this.docIdToRoomMap.get(docId)
 
-            if (!room) return null
+            if (!room)  {
+                return {
+                    ok: false,
+                    reason: "ACCESS_DENIED"
+                }
+            }
 
             this.addToAccessCache(user, docId, role)
             console.log(this.accessCache, "join");
-            return room
+            return {
+                ok : true,
+                doc : room.doc,
+                version: room.rev,
+                roomId : room.roomId
+            }
         }
         
         

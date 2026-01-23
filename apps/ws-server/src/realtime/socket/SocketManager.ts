@@ -118,17 +118,21 @@ class SocketManager {
             const message = JSON.parse(data.toString()) as MESSAGE_INPUT_TYPE
 
             if (message.type === RoomType.INIT_ROOM) {
-                const room = await roomManager.createOrJoinRoom(user, message.data.docId)
+                const result = await roomManager.createOrJoinRoom(user, message.data.docId)
 
-                if (!room) return
+                if (!result.ok) {
+                    console.error(result.reason);
+                    
+                    return
+                }
 
-                this.addUser(user, room.roomId)
-                this.broadCast(room.roomId, {
+                this.addUser(user, result.roomId)
+                this.broadCast(result.roomId, {
                     type : RoomOutputType.USER_JOINDED,
                     data : {
-                        roomId : room.roomId,
-                        doc : room.doc,
-                        version : room.rev
+                        roomId : result.roomId,
+                        doc : result.doc,
+                        version : result.version
                     }
                 })
             }
