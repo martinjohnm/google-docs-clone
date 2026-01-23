@@ -5,6 +5,7 @@ import { socketManager } from "../socket/SocketManager.js";
 import { Role } from "@repo/db";
 import { User } from "../../auth/User.js";
 import { DocId, RoomId, UserId } from "./RoomTypes.js";
+import { loadRoomFromDb } from "./RoomFactory.js";
 
 
 
@@ -51,8 +52,9 @@ export class RoomManager {
             if (message.type == RoomType.INIT_ROOM) {
                 
                 if (!this.docIdToRoomMap.has(message.data.docId)) {
-                    const room = new Room()
-                
+                    
+                    const room = await loadRoomFromDb(message.data.docId)
+
                     this.docIdToRoomMap.set(message.data.docId, room)
                     
                     socketManager.addUser(user, room.roomId)
