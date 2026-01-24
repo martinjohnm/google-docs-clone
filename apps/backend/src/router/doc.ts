@@ -101,7 +101,8 @@ router.get("/get/:id", UserProtectionMiddleware, async (req, res) => {
                     orderBy : {
                         version : "desc"
                     }
-                }
+                },
+                operations : true
             }
         })
 
@@ -110,7 +111,7 @@ router.get("/get/:id", UserProtectionMiddleware, async (req, res) => {
                 message : "No such document"
             })
             return
-        }
+        }        
 
         const latestSnapshot = existingDoc.snapshots[0]
 
@@ -126,19 +127,21 @@ router.get("/get/:id", UserProtectionMiddleware, async (req, res) => {
             where : {
                 documentId : existingDoc.id,
                 version : {
-                    gt : latestSnapshot.version
+                    gte : latestSnapshot.version
                 }
             }, 
             orderBy : {
-                version : "desc"
+                version : "asc"
             }
         })
+
+        // console.log(operationsAfterLatestSnapshot[0]);
+        
         
         // transform the ops with snapshot to get the latest doc
 
 
         const documentData = reconstructorFromSnapshot(latestSnapshot, operationsAfterLatestSnapshot)
-        console.log(documentData);
         
         
         res.status(OK).json({

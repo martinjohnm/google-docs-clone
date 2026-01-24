@@ -48,7 +48,7 @@ export async function createRoomAndLoadPermissionsFromDb(userIdFromDb : string, 
         where : {
             documentId : existingDoc.id,
             version : {
-                gt : latestSnapshot.version
+                gte : latestSnapshot.version
             }
         }, 
         orderBy : {

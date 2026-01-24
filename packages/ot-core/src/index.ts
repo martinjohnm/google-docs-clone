@@ -149,46 +149,59 @@ export function reconstructorFromSnapshot(latestSnapshotFromDb : SnapshotType, o
     } }
 
     let doc : string = latestSnapshotFromDb.content
+
+    let version = latestSnapshotFromDb.version
     
     for (let i =0;i < opsArrAfterLatestSnapFromDb.length; i++) {
-
+        
         const opFromDb = opsArrAfterLatestSnapFromDb[i]
-
         if (!opFromDb) continue
+        
 
         const opType = opFromDb.type
 
         let op : Op | null = null
+        
+        // explicitly typing insert here
+        if (opType === "INSERT") {
+            
+            if (!opFromDb.text) continue            
 
-        if (opType === OpType.INSERT) {
             op  = {
                 type : OpType.INSERT,
                 pos : opFromDb.position,
-                text : opFromDb.text ?? "",
+                text : opFromDb.text,
                 id : opFromDb.id,
                 rev : opFromDb.version,
-                clientId : ""
+                clientId : "",
+                length : null
 
             }
         } else {
+
+            if (!opFromDb.length) continue
+            
             op = {
                 type : OpType.DELETE,
                 pos : opFromDb.position,
-                length : opFromDb.length ?? 1,
+                length : opFromDb.length,
                 id : opFromDb.id,
                 rev : opFromDb.version,
-                clientId : ""
-
+                clientId : "",
+                text : null
             }
         }
 
         if (!op) continue
+        
 
         doc = applyOp(doc, op)
+        
+        version = op.rev
     }
 
     return {
         doc,
-        version : 0
+        version
     }
 }
