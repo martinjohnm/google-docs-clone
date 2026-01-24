@@ -43,7 +43,7 @@ export class OtClient {
             return {
                 type : op.type,
                 data : {
-                    roomId : this.roomId,
+                    docId : this.roomId,
                     op
                 }
             }
@@ -106,7 +106,7 @@ export class OtClient {
             return {
                 type : this.pendingOp.type,
                 data : {
-                    roomId: this.roomId,
+                    docId: this.roomId,
                     op : this.pendingOp
                 }
             }
