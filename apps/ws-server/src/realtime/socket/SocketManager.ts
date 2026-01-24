@@ -1,11 +1,12 @@
-import { MESSAGE_INPUT_TYPE, MESSAGE_OUTPUT_TYPE, RoomOutputType, RoomType } from "@repo/types/ws-types";
+import { INSERT_OP_FROM_SERVER, MESSAGE_INPUT_TYPE, MESSAGE_OUTPUT_TYPE, RoomOutputType, RoomType } from "@repo/types/ws-types";
 import { User } from "../../auth/User";
 import { OpType } from "@repo/types/ot-types";
 import { roomManager } from "../room/RoomManager";
+import { RoomId, UserId } from "./SocketTypes";
+import { persistanceQueue } from "../../persistance/queue";
 
 
-export type UserId = string
-export type RoomId = string
+
 
 class SocketManager {
     private static instance : SocketManager
@@ -142,10 +143,19 @@ class SocketManager {
             }
 
             if (message.type === OpType.INSERT) {
-                const messageFromRoom = roomManager.receiveOp(message.data.docId, message.data.op)
+                const messageFromRoom = roomManager.receiveOp(message.data.docId, message.data.op) as INSERT_OP_FROM_SERVER
                 if (!messageFromRoom) return
                 this.broadCast(message.data.docId, messageFromRoom)
                 // persist to db 
+                persistanceQueue.push({
+                    documentId : message.data.docId,
+                    position : message.data.op.pos,
+                    userId : user.userIdFromDb,
+                    version : message.data.op.rev,
+                    type : "INSERT",
+                    text : message.data.op.text,
+                    length : null
+                })
             }
 
             if (message.type === OpType.DELETE) {
@@ -153,6 +163,15 @@ class SocketManager {
                 if (!messageFromRoom) return
                 this.broadCast(message.data.docId, messageFromRoom)
                 // persist to db 
+                persistanceQueue.push({
+                    documentId : message.data.docId,
+                    position : message.data.op.pos,
+                    userId : user.userIdFromDb,
+                    version : message.data.op.rev,
+                    type : "DELETE",
+                    text : null,
+                    length : message.data.op.length
+                })
             }
             
             console.log(this.userRoomMapping, this.roomUserMapping);

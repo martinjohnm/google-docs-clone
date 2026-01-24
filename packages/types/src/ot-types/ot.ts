@@ -7,8 +7,8 @@ export enum OpType {
 }
 
 type OpBase = { clientId: string, rev: number, id: string }
-export type InsertOp = OpBase & { type: OpType.INSERT, pos: number, text: string }
-export type DeleteOp = OpBase & { type: OpType.DELETE, pos: number, length: number }
+export type InsertOp = OpBase & { type: OpType.INSERT, pos: number, text: string, length : null }
+export type DeleteOp = OpBase & { type: OpType.DELETE, pos: number, length: number, text : null }
 export type Op = InsertOp | DeleteOp
 
 export type OtServerDataResponse = 

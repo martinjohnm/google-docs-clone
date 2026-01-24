@@ -17,10 +17,7 @@ export async function startWriter() {
         console.log(op);
 
         await prisma.operation.create({
-            data : {
-                version : op.version,
-                
-            }
+            data : op
         })
     }
 }

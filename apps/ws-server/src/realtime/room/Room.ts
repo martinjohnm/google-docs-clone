@@ -2,7 +2,7 @@ import { Op, OpType } from "@repo/types/ot-types"
 import { applyOp, tieBreak, transformAgainstSequence } from "@repo/ot-core"
 import { User } from "../../auth/User.js"
 import { DocContent, DocId, DocVersion } from "./RoomTypes.js"
-import { MESSAGE_OUTPUT_TYPE } from "@repo/types/ws-types"
+import { DELETE_OP_FROM_SERVER, INSERT_OP_FROM_SERVER, MESSAGE_OUTPUT_TYPE, NO_OP_FROM_SERVER } from "@repo/types/ws-types"
 
 
 
@@ -29,7 +29,7 @@ export class Room {
         this.users.push(user)
     }
 
-    receiveOp(op: Op) : MESSAGE_OUTPUT_TYPE {
+    receiveOp(op: Op) : INSERT_OP_FROM_SERVER | DELETE_OP_FROM_SERVER | NO_OP_FROM_SERVER {
         const tail = this.history.slice(op.rev)
         const transformed = transformAgainstSequence(op, tail,tieBreak)
 

@@ -1,10 +1,8 @@
 import { Op } from "@repo/types/ot-types";
+import { OpTypeToPersistInDB } from "../realtime/socket/SocketTypes";
 
 
-interface QueueData {
-    op : Op,
-    version : number
-}
 
 
-export const persistanceQueue : QueueData[] = []
+
+export const persistanceQueue : OpTypeToPersistInDB[] = []
