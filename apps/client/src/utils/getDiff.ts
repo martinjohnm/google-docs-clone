@@ -30,6 +30,7 @@ export function diffToOp(oldText: string, newText: string) : Op | null {
       rev : 0,
       id : "1",
       type : OpType.INSERT,
+      length : null,
       pos: start,
       text: newText.slice(start, endNew + 1),
     };
@@ -44,6 +45,7 @@ export function diffToOp(oldText: string, newText: string) : Op | null {
       type : OpType.DELETE,
       pos: start,
       length: endOld - start + 1,
+      text : null,
     };
   }
 
