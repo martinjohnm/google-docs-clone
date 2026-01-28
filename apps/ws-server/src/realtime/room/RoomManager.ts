@@ -75,7 +75,6 @@ export class RoomManager {
 
             this.docIdToRoomMap.set(docId, room)
             this.addToAccessCache(user, docId, role)
-            console.log(this.accessCache, "init");
             return {
                 ok : true,
                 doc : room.doc,
@@ -102,7 +101,6 @@ export class RoomManager {
             }
 
             this.addToAccessCache(user, docId, role)
-            console.log(this.accessCache, "join");
             return {
                 ok : true,
                 doc : room.doc,
