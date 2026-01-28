@@ -116,6 +116,8 @@ Persistence & Recovery
 
 # Geting started
 
+### copy .env.example file on each apps and service and make sure all uses the same db url and jwt secret 
+
 Install dependies
 
 ### npm install
