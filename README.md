@@ -116,22 +116,22 @@ Persistence & Recovery
 
 # Geting started
 
-### copy .env.example file on each apps and service and make sure all uses the same db url and jwt secret 
+- copy .env.example file on each apps and service and make sure all uses the same db url and jwt secret 
 
-Install dependies
+### Install dependies
 
-### npm install
+- npm install
 
-Initialize the Database
+### Initialize the Database
 
-### cd packages/database 
-### npx prisma init 
+- cd packages/database 
+- npx prisma init 
 
-### cd ../..
+- cd ../..
 
-### npx turbo db:migrate
-### npx turbo db:generate
+- npx turbo db:migrate
+- npx turbo db:generate
 
-Run in dev mode 
+### Run in dev mode 
 
-### npm run dev
+- npm run dev
