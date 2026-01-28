@@ -5,7 +5,7 @@ import { GET_DOC } from "../../urls/user.urls"
 
 export const useGetExistingDocument = (id : string | null) => {
     const [loading, setLoading] = useState<boolean>(false)
-    const [_error, setError] = useState<string | null>(null)
+    const [error, setError] = useState<string | null>(null)
     const [document, setDocument] = useState<{doc : string, version : number} | null>(null)
 
 
@@ -35,5 +35,5 @@ export const useGetExistingDocument = (id : string | null) => {
         }
     }
 
-    return {loading, document }
+    return {loading, document, error }
 }

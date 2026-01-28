@@ -15,7 +15,7 @@ export const DocumentPage = () => {
     const navi = useNavigate()
 
    
-    const {document} = useGetExistingDocument(params.id ?? "")
+    const {document, loading} = useGetExistingDocument(params.id ?? "")
       
     
     useEffect(() => {
@@ -40,13 +40,13 @@ export const DocumentPage = () => {
 
 
     return (
-    (!socket || !document) ?  (
+    (!socket || loading) ?  (
     <div>
         Loading
     </div>
         ) : (
-            
-    <div>
+    
+    (document ? (<div>
         <div className="h-18 bg-slate-200 grid grid-cols-3 justify-center items-center">
             <div>
 
@@ -69,6 +69,9 @@ export const DocumentPage = () => {
             
         </div>
         
-    </div>)
+    </div>) : (<div>
+        No such document
+    </div>))
+    )
     )
 }
